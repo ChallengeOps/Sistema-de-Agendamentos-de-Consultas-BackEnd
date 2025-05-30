@@ -15,17 +15,20 @@ public class Agendamento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false)
-    private String dataHora;
-
-    @Column(nullable = false)
     @ManyToOne
     @JoinColumn(name = "cliente_id", nullable = false)
     private Usuario cliente;
 
-
+    @ManyToOne
+    @JoinColumn(name = "profissional_id", nullable = false)
     private Profissional profissional;
+
+    @ManyToOne
+    @JoinColumn(name = "servico_id", nullable = false)
     private Servico servico;
+
+    @OneToOne
+    private Disponibilidade disponibilidade;
 
 
     // Getters and Setters can be generated or manually added here

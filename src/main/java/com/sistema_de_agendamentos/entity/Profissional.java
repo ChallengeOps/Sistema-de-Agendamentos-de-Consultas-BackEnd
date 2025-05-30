@@ -1,9 +1,16 @@
 package com.sistema_de_agendamentos.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Profissional {
 
     @Id
@@ -19,12 +26,12 @@ public class Profissional {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
     @OneToMany(mappedBy = "profissional", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Servico> servicos;
 
-    @Column(nullable = false)
     @OneToMany(mappedBy = "profissional", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Disponibilidade> disponibilidades;
 
+    @OneToMany(mappedBy = "profissional", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Agendamento> agendamentos;
 }

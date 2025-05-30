@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Data
 @AllArgsConstructor
@@ -24,8 +26,10 @@ public class Servico {
     @Column(nullable = false)
     private Integer duracaoEmMinutos;
 
-    @Column(nullable = false)
     @ManyToOne
     @JoinColumn(name = "profissional_id", nullable = false)
     private Profissional profissional;
+
+    @OneToMany(mappedBy = "servico", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Agendamento> agendamentos;
 }
