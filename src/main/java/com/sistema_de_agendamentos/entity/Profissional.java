@@ -1,17 +1,10 @@
 package com.sistema_de_agendamentos.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Entity
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class Usuario {
+public class Profissional {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,15 +20,11 @@ public class Usuario {
     private String password;
 
     @Column(nullable = false)
-    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Agendamento> agendamentos;
+    @OneToMany(mappedBy = "profissional", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Servico> servicos;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private ClienteTipo acesso;
+    @OneToMany(mappedBy = "profissional", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Disponibilidade> disponibilidades;
 
-    enum ClienteTipo{
-        CLIENTE,
-        ADMIN
-    }
 }
