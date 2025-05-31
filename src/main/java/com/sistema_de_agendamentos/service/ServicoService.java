@@ -2,8 +2,7 @@ package com.sistema_de_agendamentos.service;
 
 import com.sistema_de_agendamentos.controller.dto.ServicoDTO;
 import com.sistema_de_agendamentos.entity.Servico;
-import com.sistema_de_agendamentos.dto.ServicoDTO;
-import com.sistema_de_agendamentos.factory.ServicoFactory;
+
 import com.sistema_de_agendamentos.repository.ServicoRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -21,6 +20,8 @@ public class ServicoService {
         this.servicoRepository = servicoRepository;
     }
 
+
+    /**
     @Transactional
     public Servico create(ServicoDTO dto){
         var servico = ServicoFactory.fromDTO(dto);
@@ -58,5 +59,5 @@ public class ServicoService {
         return servicoRepository.findById(id)
                 .orElseThrow(
                         () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Id invalido"));
-    }
+    }**/
 }
