@@ -21,43 +21,9 @@ public class ServicoService {
     }
 
 
-    /**
-    @Transactional
-    public Servico create(ServicoDTO dto){
-        var servico = ServicoFactory.fromDTO(dto);
-        return servicoRepository.save(servico);
-    }
-
-    public List<ServicoDTO> findAll(){
-        var servicos = servicoRepository.findAll().stream()
-                .map(ServicoFactory::fromServico).toList();
-        if(servicos.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.NO_CONTENT);
-        }
-        return servicos;
-    }
-
-    @Transactional
-    public ServicoDTO findById(Integer id){
-        var servico = findEntity(id);
-        return ServicoFactory.fromServico(servico);
-    }
-
-    @Transactional
-    public void deleteById(Integer id){
-        findEntity(id);
-        servicoRepository.deleteById(id);
-    }
-
-    public ServicoDTO updateServico(ServicoDTO dto, Integer id){
-        var servico = findEntity(id);
-        var updateServico = ServicoFactory.updateFromDTO(servico, dto);
-        return ServicoFactory.fromServico(servicoRepository.save(updateServico));
-    }
-
     private Servico findEntity(Integer id){
         return servicoRepository.findById(id)
                 .orElseThrow(
                         () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Id invalido"));
-    }**/
+    }
 }
