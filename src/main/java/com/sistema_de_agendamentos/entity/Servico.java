@@ -28,7 +28,7 @@ public class Servico {
 
     @ManyToOne
     @JoinColumn(name = "profissional_id", nullable = false)
-    private Profissional profissional;
+    private Usuario profissional;
 
     @OneToMany(mappedBy = "servico", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Agendamento> agendamentos;

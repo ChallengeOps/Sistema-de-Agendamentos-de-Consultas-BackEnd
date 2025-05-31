@@ -30,9 +30,9 @@ public class Disponibilidade {
 
     @ManyToOne
     @JoinColumn(name = "profissional_id", nullable = false)
-    private Profissional profissional;
+    private Usuario profissional;
 
-    @OneToOne
+    @OneToOne(mappedBy = "disponibilidade")
     private Agendamento agendamento;
 
 

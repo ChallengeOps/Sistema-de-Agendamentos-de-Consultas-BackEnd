@@ -21,15 +21,15 @@ public class Agendamento {
 
     @ManyToOne
     @JoinColumn(name = "profissional_id", nullable = false)
-    private Profissional profissional;
+    private Usuario profissional;
 
     @ManyToOne
     @JoinColumn(name = "servico_id", nullable = false)
     private Servico servico;
 
     @OneToOne
+    @JoinColumn(name = "disponibilidade_id", unique = true)
     private Disponibilidade disponibilidade;
-
 
     // Getters and Setters can be generated or manually added here
 }

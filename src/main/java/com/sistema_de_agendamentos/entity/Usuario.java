@@ -20,7 +20,7 @@ public class Usuario {
     @Column(nullable = false)
     private String nome;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
@@ -29,12 +29,26 @@ public class Usuario {
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Agendamento> agendamentos;
 
+    @OneToMany(mappedBy = "profissional", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Servico> servicos;
+
+    @OneToMany(mappedBy = "profissional", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Disponibilidade> disponibilidades;
+
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ClienteTipo acesso;
 
-    enum ClienteTipo{
+    public enum ClienteTipo{
         CLIENTE,
-        ADMIN
+        PROFISSIONAL,
+        ADMIN;
+
+        //faca aqui um getnome do enum ClienteTipo
+        public String getNome() {
+            return this.name();
+        }
+
     }
 }
