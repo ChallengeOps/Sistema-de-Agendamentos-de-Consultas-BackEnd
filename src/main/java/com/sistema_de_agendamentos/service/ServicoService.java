@@ -3,6 +3,7 @@ package com.sistema_de_agendamentos.service;
 import com.sistema_de_agendamentos.controller.dto.ServicoDTO;
 import com.sistema_de_agendamentos.entity.Servico;
 
+import com.sistema_de_agendamentos.entity.Usuario;
 import com.sistema_de_agendamentos.repository.ServicoRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -14,16 +15,27 @@ import java.util.List;
 @Service
 public class ServicoService {
 
-    private final ServicoRepository servicoRepository;
+    private ServicoRepository servicoRepository;
 
-    public ServicoService(ServicoRepository servicoRepository) {
+    private UsuarioService usuarioService;
+
+    public ServicoService(ServicoRepository servicoRepository, UsuarioService usuarioService) {
         this.servicoRepository = servicoRepository;
+        this.usuarioService = usuarioService;
     }
 
+    // funcao de cadastrar serviço
+    public void cadastrarServico(Integer id,ServicoDTO dto){
 
-    private Servico findEntity(Integer id){
-        return servicoRepository.findById(id)
-                .orElseThrow(
-                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Id invalido"));
+        Usuario usuario = usuarioService.findEntity(id);
+        if (usuario.getAcesso() != Usuario.ClienteTipo.PROFISSIONAL){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Acesso restrito a funcionarios");
+        }
+        var servico = new Servico();
+        servico.setProfissional(usuario);
+        servico.setNome(dto.nome());
+        servico.setDescricao(dto.descricao());
+        servico.setDuracaoEmMinutos(dto.duracaoEmMinutos());
+        servicoRepository.save(servico);
     }
 }

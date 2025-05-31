@@ -51,7 +51,7 @@ public class UsuarioService {
         return usuarioMapper.fromEntity(usuarioRepository.save(updateUsuario));
     }
 
-    private Usuario findEntity(Integer id){
+    protected Usuario findEntity(Integer id){
         return usuarioRepository.findById(id)
                 .orElseThrow(
                         () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Id invalido"));
