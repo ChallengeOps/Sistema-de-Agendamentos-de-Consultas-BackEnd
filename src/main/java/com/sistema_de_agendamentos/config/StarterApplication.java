@@ -3,6 +3,7 @@ package com.sistema_de_agendamentos.config;
 import com.sistema_de_agendamentos.controller.dto.DisponibilidadeDTO;
 import com.sistema_de_agendamentos.controller.dto.ServicoDTO;
 import com.sistema_de_agendamentos.controller.dto.UsuarioDTO;
+import com.sistema_de_agendamentos.controller.dto.UsuarioRegisterDTO;
 import com.sistema_de_agendamentos.entity.Usuario;
 import com.sistema_de_agendamentos.service.DisponibilidadeService;
 import com.sistema_de_agendamentos.service.ServicoService;
@@ -27,11 +28,11 @@ public class StarterApplication {
 
     @PostConstruct
     public void start(){
-        usuarioService.create(new UsuarioDTO( "Cliente Um", "cliente1@email.com", Usuario.ClienteTipo.CLIENTE));
-        usuarioService.create(new UsuarioDTO("Cliente Dois", "cliente2@email.com",  Usuario.ClienteTipo.CLIENTE));
+        usuarioService.create(new UsuarioRegisterDTO( "Cliente Um", "cliente1@email.com","123", Usuario.ClienteTipo.CLIENTE));
+        usuarioService.create(new UsuarioRegisterDTO("Cliente Dois", "cliente2@email.com", "123", Usuario.ClienteTipo.CLIENTE));
 
-        usuarioService.create(new UsuarioDTO("Profissional Um", "profissional1@email.com",Usuario.ClienteTipo.PROFISSIONAL));
-        usuarioService.create(new UsuarioDTO( "Profissional Dois", "profissional2@email.com", Usuario.ClienteTipo.PROFISSIONAL));
+        usuarioService.create(new UsuarioRegisterDTO("Profissional Um", "profissional1@email.com", "123" , Usuario.ClienteTipo.PROFISSIONAL));
+        usuarioService.create(new UsuarioRegisterDTO( "Profissional Dois", "profissional2@email.com","123", Usuario.ClienteTipo.PROFISSIONAL));
 
         // Buscar profissionais pelo e-mail
         var profissional1 = usuarioService.findByEmail("profissional1@email.com");

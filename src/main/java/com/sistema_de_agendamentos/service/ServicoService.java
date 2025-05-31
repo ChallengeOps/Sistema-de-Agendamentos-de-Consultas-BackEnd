@@ -40,5 +40,35 @@ public class ServicoService {
 
     }
 
+    public List<ServicoDTO> listarServicosPorProfissional(Integer id) {
+        Usuario usuario = usuarioService.findEntity(id);
+        if (usuario.getAcesso() != Usuario.ClienteTipo.PROFISSIONAL) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Acesso restrito a funcionarios");
+        }
+
+        List<Servico> servicos = servicoRepository.findByProfissionalId(id);
+        if (servicos.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Nenhum serviço encontrado para o profissional");
+        }
+        return servicos.stream()
+                .map(servico -> new ServicoDTO(servico.getNome(), servico.getDescricao(), servico.getDuracaoEmMinutos()))
+                .toList();
+    }
+
+
+    public List<ServicoDTO> listarServicosPorProfissionalENome(Integer id, String nome) {
+        Usuario usuario = usuarioService.findEntity(id);
+        if (usuario.getAcesso() != Usuario.ClienteTipo.PROFISSIONAL) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Acesso restrito a funcionarios");
+        }
+
+        List<Servico> servicos = servicoRepository.findByProfissionalIdAndNomeContainingIgnoreCase(id, nome);
+        if (servicos.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Nenhum serviço encontrado para o profissional com o nome especificado");
+        }
+        return servicos.stream()
+                .map(servico -> new ServicoDTO(servico.getNome(), servico.getDescricao(), servico.getDuracaoEmMinutos()))
+                .toList();
+    }
 
 }

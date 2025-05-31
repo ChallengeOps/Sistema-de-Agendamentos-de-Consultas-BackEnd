@@ -1,6 +1,7 @@
 package com.sistema_de_agendamentos.service;
 
 import com.sistema_de_agendamentos.controller.dto.UsuarioDTO;
+import com.sistema_de_agendamentos.controller.dto.UsuarioRegisterDTO;
 import com.sistema_de_agendamentos.entity.Usuario;
 import com.sistema_de_agendamentos.mapper.UsuarioMapper;
 import com.sistema_de_agendamentos.repository.UsuarioRepository;
@@ -23,13 +24,14 @@ public class UsuarioService {
         this.usuarioMapper = usuarioMapper;
     }
 
-    public Usuario create(UsuarioDTO usuarioDTO) {
-        var usuario = usuarioMapper.fromDTO(usuarioDTO);
+    @Transactional
+    public Usuario create(UsuarioRegisterDTO usuarioDTO) {
+        var usuario = usuarioMapper.fromRegisterDTO(usuarioDTO);
         if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email já cadastrado");
         }
         usuario.setAcesso(usuarioDTO.acesso());
-        usuario.setPassword(usuario.getNome());//retirar dps
+        usuario.setPassword(usuarioDTO.senha());
         return usuarioRepository.save(usuario);
     }
 
@@ -51,8 +53,13 @@ public class UsuarioService {
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteById(Integer id){
-        findEntity(id);
-        usuarioRepository.deleteById(id);
+        var usuario = findEntity(id);
+
+        usuario.getAgendamentos().size();
+        usuario.getServicos().size();
+        usuario.getDisponibilidades().size();
+        usuarioRepository.delete(usuario);
+
     }
 
     public UsuarioDTO updateUsuario(UsuarioDTO dto, Integer id){
