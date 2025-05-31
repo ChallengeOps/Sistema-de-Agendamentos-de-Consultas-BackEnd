@@ -36,13 +36,24 @@ public class Disponibilidade {
     private Agendamento agendamento;
 
 
-    enum DiaDeSemana {
+    public enum DiaDeSemana {
         DOMINGO,
         SEGUNDA,
         TERCA,
         QUARTA,
         QUINTA,
         SEXTA,
-        SABADO
+        SABADO;
+
+        public static DiaDeSemana fromString(String dia) {
+            if (dia == null) {
+                throw new IllegalArgumentException("Dia da semana não pode ser nulo");
+            }
+            try {
+                return DiaDeSemana.valueOf(dia.trim().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Dia da semana inválido: " + dia);
+            }
+        }
     }
 }

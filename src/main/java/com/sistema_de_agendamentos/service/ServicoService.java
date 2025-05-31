@@ -16,7 +16,6 @@ import java.util.List;
 public class ServicoService {
 
     private ServicoRepository servicoRepository;
-
     private UsuarioService usuarioService;
 
     public ServicoService(ServicoRepository servicoRepository, UsuarioService usuarioService) {
@@ -24,7 +23,7 @@ public class ServicoService {
         this.usuarioService = usuarioService;
     }
 
-    // funcao de cadastrar serviço
+    @Transactional
     public void cadastrarServico(Integer id,ServicoDTO dto){
 
         Usuario usuario = usuarioService.findEntity(id);
@@ -36,6 +35,10 @@ public class ServicoService {
         servico.setNome(dto.nome());
         servico.setDescricao(dto.descricao());
         servico.setDuracaoEmMinutos(dto.duracaoEmMinutos());
+
         servicoRepository.save(servico);
+
     }
+
+
 }

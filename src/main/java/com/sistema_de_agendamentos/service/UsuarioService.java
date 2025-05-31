@@ -23,6 +23,16 @@ public class UsuarioService {
         this.usuarioMapper = usuarioMapper;
     }
 
+    public Usuario create(UsuarioDTO usuarioDTO) {
+        var usuario = usuarioMapper.fromDTO(usuarioDTO);
+        if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email já cadastrado");
+        }
+        usuario.setAcesso(usuarioDTO.acesso());
+        usuario.setPassword(usuario.getNome());//retirar dps
+        return usuarioRepository.save(usuario);
+    }
+
     public List<UsuarioDTO> findAll(){
         var usuarios = usuarioRepository.findAll().stream()
                 .map(usuarioMapper::fromEntity).toList();
@@ -55,5 +65,10 @@ public class UsuarioService {
         return usuarioRepository.findById(id)
                 .orElseThrow(
                         () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Id invalido"));
+    }
+
+    public Usuario findByEmail(String email) {
+        return usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
     }
 }
