@@ -27,11 +27,11 @@ public class StarterApplication {
 
     @PostConstruct
     public void start(){
-        usuarioService.create(new UsuarioDTO(null, "Cliente Um", "cliente1@email.com", Usuario.ClienteTipo.CLIENTE));
-        usuarioService.create(new UsuarioDTO(null, "Cliente Dois", "cliente2@email.com",  Usuario.ClienteTipo.CLIENTE));
+        usuarioService.create(new UsuarioDTO( "Cliente Um", "cliente1@email.com", Usuario.ClienteTipo.CLIENTE));
+        usuarioService.create(new UsuarioDTO("Cliente Dois", "cliente2@email.com",  Usuario.ClienteTipo.CLIENTE));
 
-        usuarioService.create(new UsuarioDTO(null, "Profissional Um", "profissional1@email.com",Usuario.ClienteTipo.PROFISSIONAL));
-        usuarioService.create(new UsuarioDTO(null, "Profissional Dois", "profissional2@email.com", Usuario.ClienteTipo.PROFISSIONAL));
+        usuarioService.create(new UsuarioDTO("Profissional Um", "profissional1@email.com",Usuario.ClienteTipo.PROFISSIONAL));
+        usuarioService.create(new UsuarioDTO( "Profissional Dois", "profissional2@email.com", Usuario.ClienteTipo.PROFISSIONAL));
 
         // Buscar profissionais pelo e-mail
         var profissional1 = usuarioService.findByEmail("profissional1@email.com");
@@ -40,7 +40,7 @@ public class StarterApplication {
         // Disponibilidades para Profissional 1
         disponibilidadeService.criarDisponibilidade(
                 profissional1.getId(),
-                new DisponibilidadeDTO("SEGUNDA", LocalDateTime.of(2024, 6, 10, 8, 0), LocalDateTime.of(2024, 6, 10, 12, 0))
+                new DisponibilidadeDTO("SEGUNDA", LocalDateTime.of(2025, 6, 10, 8, 0), LocalDateTime.of(2025, 6, 10, 12, 0))
         );
         servicoService.cadastrarServico(
                 profissional1.getId(),

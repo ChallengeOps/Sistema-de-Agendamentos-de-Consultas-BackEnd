@@ -6,6 +6,7 @@ import com.sistema_de_agendamentos.entity.Usuario;
 import com.sistema_de_agendamentos.repository.DisponibilidadeRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -19,7 +20,7 @@ public class DisponibilidadeService {
         this.usuarioService = usuarioService;
     }
 
-
+    @Transactional
     public void criarDisponibilidade(Integer id, DisponibilidadeDTO dto){
         var usuario = usuarioService.findEntity(id);
         if (usuario.getAcesso() != Usuario.ClienteTipo.PROFISSIONAL) {
