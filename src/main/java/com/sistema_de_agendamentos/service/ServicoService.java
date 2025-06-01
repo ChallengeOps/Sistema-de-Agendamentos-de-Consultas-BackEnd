@@ -1,6 +1,7 @@
 package com.sistema_de_agendamentos.service;
 
 import com.sistema_de_agendamentos.controller.dto.ServicoDTO;
+import com.sistema_de_agendamentos.controller.dto.ServicoDetailsDTO;
 import com.sistema_de_agendamentos.entity.Servico;
 
 import com.sistema_de_agendamentos.entity.Usuario;
@@ -40,6 +41,25 @@ public class ServicoService {
 
     }
 
+    @Transactional
+    public List<ServicoDTO> listarServicos() {
+        List<Servico> servicos = servicoRepository.findAll();
+        if (servicos.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Nenhum serviço cadastrado");
+        }
+        return servicos.stream()
+                .map(servico -> new ServicoDTO(servico.getNome(), servico.getDescricao(), servico.getDuracaoEmMinutos()))
+                .toList();
+    }
+
+    public Servico detalharServico(Integer id) {
+        Servico servico = servicoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Serviço não encontrado"));
+
+    }
+
+
+    @Transactional
     public List<ServicoDTO> listarServicosPorProfissional(Integer id) {
         Usuario usuario = usuarioService.findEntity(id);
         if (usuario.getAcesso() != Usuario.ClienteTipo.PROFISSIONAL) {
@@ -56,6 +76,7 @@ public class ServicoService {
     }
 
 
+    @Transactional
     public List<ServicoDTO> listarServicosPorProfissionalENome(Integer id, String nome) {
         Usuario usuario = usuarioService.findEntity(id);
         if (usuario.getAcesso() != Usuario.ClienteTipo.PROFISSIONAL) {
@@ -71,4 +92,14 @@ public class ServicoService {
                 .toList();
     }
 
+    @Transactional
+    public void deleteServico(Integer id) {
+        Servico servico = findEntity(id);
+        servicoRepository.delete(servico);
+    }
+
+    private Servico findEntity(Integer id) {
+        return servicoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Serviço não encontrado"));
+    }
 }

@@ -35,24 +35,24 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
-    public List<UsuarioDTO> findAll(){
+    public List<UsuarioDTO> findAll() {
         var usuarios = usuarioRepository.findAll().stream()
                 .map(usuarioMapper::fromEntity).toList();
-        if(usuarios.isEmpty()){
+        if (usuarios.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT);
         }
         return usuarios;
     }
 
     @Transactional
-    public UsuarioDTO findById(Integer id){
+    public UsuarioDTO findById(Integer id) {
         var usuario = findEntity(id);
         return usuarioMapper.fromEntity(usuario);
     }
 
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    public void deleteById(Integer id){
+    public void deleteById(Integer id) {
         var usuario = findEntity(id);
 
         usuario.getAgendamentos().size();
@@ -62,13 +62,13 @@ public class UsuarioService {
 
     }
 
-    public UsuarioDTO updateUsuario(UsuarioDTO dto, Integer id){
+    public UsuarioDTO updateUsuario(UsuarioDTO dto, Integer id) {
         var usuario = findEntity(id);
         var updateUsuario = usuarioMapper.updateFromDTO(dto, usuario);
         return usuarioMapper.fromEntity(usuarioRepository.save(updateUsuario));
     }
 
-    protected Usuario findEntity(Integer id){
+    protected Usuario findEntity(Integer id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(
                         () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Id invalido"));

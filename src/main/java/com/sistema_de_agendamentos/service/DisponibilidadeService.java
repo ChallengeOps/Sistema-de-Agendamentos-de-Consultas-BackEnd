@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @Service
 public class DisponibilidadeService {
 
@@ -43,5 +45,29 @@ public class DisponibilidadeService {
         disponibilidade.setDiaDeSemana(Disponibilidade.DiaDeSemana.fromString(dto.diaDeSemana()));
 
         disponibilidadeRepository.save(disponibilidade);
+    }
+
+    public List<DisponibilidadeDTO> listarDisponibilidades() {
+        var disponibilidades = disponibilidadeRepository.findAll().stream()
+                .map(disponibilidade -> new DisponibilidadeDTO(
+                        disponibilidade.getHoraInicio(),
+                        disponibilidade.getHoraFim(),
+                        disponibilidade.getDiaDeSemana().getNome()))
+                .toList();
+        if (disponibilidades.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Nenhuma disponibilidade cadastrada");
+        }
+        return disponibilidades;
+    }
+
+    @Transactional
+    public void deleteById(Integer id) {
+        var disponibilidade = findEntity(id);
+        disponibilidadeRepository.delete(disponibilidade);
+    }
+
+    private Disponibilidade findEntity(Integer id) {
+        return disponibilidadeRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Disponibilidade não encontrada"));
     }
 }
