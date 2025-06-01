@@ -2,7 +2,7 @@ package com.sistema_de_agendamentos.config;
 
 import com.sistema_de_agendamentos.controller.dto.disponibilidade.DisponibilidadeDTO;
 import com.sistema_de_agendamentos.controller.dto.servico.ServicoDTO;
-import com.sistema_de_agendamentos.controller.dto.UsuarioRegisterDTO;
+import com.sistema_de_agendamentos.controller.dto.usuario.UsuarioRegisterDTO;
 import com.sistema_de_agendamentos.entity.Usuario;
 import com.sistema_de_agendamentos.service.DisponibilidadeService;
 import com.sistema_de_agendamentos.service.ServicoService;

@@ -1,7 +1,7 @@
 package com.sistema_de_agendamentos.mapper;
 
-import com.sistema_de_agendamentos.controller.dto.UsuarioDTO;
-import com.sistema_de_agendamentos.controller.dto.UsuarioRegisterDTO;
+import com.sistema_de_agendamentos.controller.dto.usuario.UsuarioDTO;
+import com.sistema_de_agendamentos.controller.dto.usuario.UsuarioRegisterDTO;
 import com.sistema_de_agendamentos.entity.Usuario;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;

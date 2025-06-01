@@ -25,9 +25,6 @@ public class DisponibilidadeService {
     @Transactional
     public void criarDisponibilidade(Integer id, DisponibilidadeDTO dto){
         var usuario = usuarioService.findEntity(id);
-        if (usuario.getAcesso() != Usuario.ClienteTipo.PROFISSIONAL) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Acesso restrito a funcionarios");
-        }
 
         var agora = java.time.LocalDateTime.now();
 
@@ -57,11 +54,7 @@ public class DisponibilidadeService {
                 .toList();
     }
 
-    @Transactional
-    public void deleteById(Integer id) {
-        var disponibilidade = findEntity(id);
-        disponibilidadeRepository.delete(disponibilidade);
-    }
+
 
     private Disponibilidade findEntity(Integer id) {
         return disponibilidadeRepository.findById(id)

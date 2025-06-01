@@ -1,7 +1,8 @@
 package com.sistema_de_agendamentos.service;
 
-import com.sistema_de_agendamentos.controller.dto.UsuarioDTO;
-import com.sistema_de_agendamentos.controller.dto.UsuarioRegisterDTO;
+import com.sistema_de_agendamentos.controller.dto.usuario.ProfissionaisDTO;
+import com.sistema_de_agendamentos.controller.dto.usuario.UsuarioDTO;
+import com.sistema_de_agendamentos.controller.dto.usuario.UsuarioRegisterDTO;
 import com.sistema_de_agendamentos.entity.Usuario;
 import com.sistema_de_agendamentos.mapper.UsuarioMapper;
 import com.sistema_de_agendamentos.repository.UsuarioRepository;
@@ -62,19 +63,20 @@ public class UsuarioService {
 
     }
 
-    public List<Usuario> listarProfissionais() {
+    public List<ProfissionaisDTO> listarProfissionais() {
         var profissionais = usuarioRepository.findByAcesso(Usuario.ClienteTipo.PROFISSIONAL);
         if (profissionais.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Nenhum profissional cadastrado");
         }
-        return profissionais;
+
+        return profissionais.stream()
+                .map(usuario ->
+                    new ProfissionaisDTO(usuario.getId(),
+                            usuario.getNome(),
+                            usuario.getEmail()
+                    )).toList();
     }
 
-    public UsuarioDTO updateUsuario(UsuarioDTO dto, Integer id) {
-        var usuario = findEntity(id);
-        var updateUsuario = usuarioMapper.updateFromDTO(dto, usuario);
-        return usuarioMapper.fromEntity(usuarioRepository.save(updateUsuario));
-    }
 
     protected Usuario findEntity(Integer id) {
         return usuarioRepository.findById(id)

@@ -46,21 +46,6 @@ public class AgendamentoService {
         return agendamentoRepository.save(agendamento);
     }
 
-    public List<Agendamento> listarAgendamentosPorUsuario(Integer id) {
-        var usuario = usuarioService.findEntity(id);
-        var agendamentos = agendamentoRepository.findByUsuario(usuario);
-        if (agendamentos.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Nenhum agendamento encontrado");
-        }
-        return agendamentos.stream()
-                .map(agendamento -> new AgendamentoDTO(agendamento.getId(),
-                        agendamento.getDataHora(),
-                        agendamento.getServico().getNome(),
-                        agendamento.getProfissional().getNome()))
-                .toList();
-    }
-
-
     public void agendamentoSetStatus(Integer id, String status) {
         var agendamento = agendamentoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Agendamento não encontrado"));
@@ -72,10 +57,5 @@ public class AgendamentoService {
         agendamentoRepository.save(agendamento);
     }
 
-    public void deleteAgendamento(Integer id) {
-        var agendamento = agendamentoRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Agendamento não encontrado"));
 
-        agendamentoRepository.delete(agendamento);
-    }
 }

@@ -1,4 +1,4 @@
-package com.sistema_de_agendamentos.controller.dto;
+package com.sistema_de_agendamentos.controller.dto.usuario;
 
 import com.sistema_de_agendamentos.entity.Usuario.ClienteTipo;
 import jakarta.validation.constraints.Email;
