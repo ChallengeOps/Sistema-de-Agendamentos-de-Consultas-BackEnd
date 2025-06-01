@@ -6,6 +6,7 @@ import com.sistema_de_agendamentos.entity.Usuario;
 import com.sistema_de_agendamentos.repository.AgendamentoRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -26,7 +27,8 @@ public class AgendamentoService {
         this.servicoService = servicoService;
     }
 
-    public Agendamento criarAgendamento(AgendamentoCreateDTO createDTO){
+    @Transactional
+    public void criarAgendamento(AgendamentoCreateDTO createDTO){
         var usuario = usuarioService.findEntity(createDTO.usuarioId());
         var profissional = usuarioService.findEntity(createDTO.profissionalId());
         var disponibilidade = disponibilidadeService.findDisponibilidade(createDTO.disponibilidadeId());
@@ -43,7 +45,7 @@ public class AgendamentoService {
         agendamento.setServico(servico);
         agendamento.setStatus(Agendamento.Status.PENDENTE);
 
-        return agendamentoRepository.save(agendamento);
+        agendamentoRepository.save(agendamento);
     }
 
     public void agendamentoSetStatus(Integer id, String status) {

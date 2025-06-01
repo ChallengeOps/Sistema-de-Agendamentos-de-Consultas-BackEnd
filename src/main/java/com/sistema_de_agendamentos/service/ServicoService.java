@@ -1,9 +1,8 @@
 package com.sistema_de_agendamentos.service;
 
-import com.sistema_de_agendamentos.controller.dto.disponibilidade.DisponibilidadeDTO;
 import com.sistema_de_agendamentos.controller.dto.disponibilidade.DisponibilidadeListagemDTO;
 import com.sistema_de_agendamentos.controller.dto.servico.ServicoDTO;
-import com.sistema_de_agendamentos.controller.dto.ServicoDetailsDTO;
+import com.sistema_de_agendamentos.controller.dto.servico.ServicoDetailsDTO;
 import com.sistema_de_agendamentos.controller.dto.servico.ServicoListagemDTO;
 import com.sistema_de_agendamentos.controller.dto.usuario.ProfissionaisDTO;
 import com.sistema_de_agendamentos.entity.Servico;
@@ -74,6 +73,7 @@ public class ServicoService {
                 servico.getDuracaoEmMinutos(),
                 servico.getProfissional().getNome(),
                 servico.getProfissional().getDisponibilidades().stream()
+                        .filter(disponibilidade -> disponibilidade.getAgendamento() == null)
                         .map(disponibilidade -> new DisponibilidadeListagemDTO(
                                 disponibilidade.getId(),
                                 disponibilidade.getHoraInicio(),
