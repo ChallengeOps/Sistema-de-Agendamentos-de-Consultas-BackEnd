@@ -29,7 +29,7 @@ public class AgendamentoService {
 
     @Transactional
     public void criarAgendamento(AgendamentoCreateDTO createDTO){
-        var usuario = usuarioService.findEntity(createDTO.usuarioId());
+        var usuario = usuarioService.findEntity(usuarioService.requireTokenUser().getId());
         var profissional = usuarioService.findEntity(createDTO.profissionalId());
         var disponibilidade = disponibilidadeService.findDisponibilidade(createDTO.disponibilidadeId());
         var servico = servicoService.findServico(createDTO.servicoId());

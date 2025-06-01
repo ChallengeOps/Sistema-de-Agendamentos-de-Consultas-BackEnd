@@ -6,12 +6,14 @@ import com.sistema_de_agendamentos.controller.dto.usuario.UsuarioRegisterDTO;
 import com.sistema_de_agendamentos.entity.Usuario;
 import com.sistema_de_agendamentos.mapper.UsuarioMapper;
 import com.sistema_de_agendamentos.repository.UsuarioRepository;
+import com.sistema_de_agendamentos.utils.StringUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.security.Principal;
 import java.util.List;
 
 @Service
@@ -77,6 +79,15 @@ public class UsuarioService {
                     )).toList();
     }
 
+    public  Usuario requireTokenUser(){
+        Principal principal = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        String principalString = principal.getName();
+
+        String email = StringUtil.extrairEmail(principalString);
+        System.out.println("Email extraído: " + email);
+
+        return findByEmail(email);
+    }
 
     protected Usuario findEntity(Integer id) {
         return usuarioRepository.findById(id)
