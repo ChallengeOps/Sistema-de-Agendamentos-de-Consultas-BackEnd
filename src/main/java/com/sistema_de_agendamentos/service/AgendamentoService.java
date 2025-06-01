@@ -5,6 +5,7 @@ import com.sistema_de_agendamentos.entity.Agendamento;
 import com.sistema_de_agendamentos.entity.Usuario;
 import com.sistema_de_agendamentos.repository.AgendamentoRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -28,6 +29,7 @@ public class AgendamentoService {
     }
 
     @Transactional
+    @PreAuthorize("hasRole('CLIENTE')")
     public void criarAgendamento(AgendamentoCreateDTO createDTO){
         var usuario = usuarioService.findEntity(usuarioService.requireTokenUser().getId());
         var profissional = usuarioService.findEntity(createDTO.profissionalId());
@@ -46,6 +48,19 @@ public class AgendamentoService {
         agendamento.setStatus(Agendamento.Status.PENDENTE);
 
         agendamentoRepository.save(agendamento);
+    }
+
+    //crie meu metodo de listar agendamento por cliente
+    @Transactional
+    public List<Agendamento> listarAgendamentosPorClienteOrCliente() {
+        var usuario = usuarioService.findEntity(usuarioService.requireTokenUser().getId());
+        if(usuario.getAcesso() == Usuario.ClienteTipo.PROFISSIONAL) {
+            return agendamentoRepository.findByProfissional(usuario);
+        }
+        if (usuario.getAcesso() == Usuario.ClienteTipo.CLIENTE) {
+            return agendamentoRepository.findByCliente(usuario);
+        }
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
     }
 
     public void agendamentoSetStatus(Integer id, String status) {

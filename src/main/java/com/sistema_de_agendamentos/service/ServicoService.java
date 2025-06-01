@@ -10,6 +10,7 @@ import com.sistema_de_agendamentos.entity.Servico;
 import com.sistema_de_agendamentos.entity.Usuario;
 import com.sistema_de_agendamentos.repository.ServicoRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -28,9 +29,11 @@ public class ServicoService {
     }
 
     @Transactional
-    public ServicoListagemDTO cadastrarServico(Integer id,ServicoDTO dto){
+    @PreAuthorize("hasRole('PROFISSIONAL')")
+    public ServicoListagemDTO cadastrarServico(ServicoDTO dto){
 
-        Usuario usuario = usuarioService.findEntity(id);
+        Usuario usuario = usuarioService.findEntity(usuarioService.requireTokenUser().getId());
+
         var servico = new Servico();
         servico.setProfissional(usuario);
         servico.setNome(dto.nome());
@@ -96,6 +99,7 @@ public class ServicoService {
                 .map(servico -> new ServicoDTO(servico.getNome(), servico.getDescricao(), servico.getDuracaoEmMinutos()))
                 .toList();
     }
+
 
     public ProfissionaisDTO getProfissionalByServico(Integer id) {
         Servico servico = findEntity(id);

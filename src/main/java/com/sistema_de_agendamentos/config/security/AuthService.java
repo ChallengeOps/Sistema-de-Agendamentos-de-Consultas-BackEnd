@@ -44,14 +44,16 @@ public class AuthService {
             var token = tokenService.generateToken(newUser);
             repository.save(newUser);
             return new ResponseDTO(newUser.getNome(), token);
+        }else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email já cadastrado");
         }
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
 
 
     @Transactional
     public ResponseDTO registerProfissional(RegisterRequestDTO body){
         var user = repository.findByEmail(body.email());
+
         if (user.isEmpty()){
             var newUser = new Usuario();
             newUser.setAcesso( Usuario.ClienteTipo.PROFISSIONAL);
@@ -61,24 +63,11 @@ public class AuthService {
             var token = tokenService.generateToken(newUser);
             repository.save(newUser);
             return new ResponseDTO(newUser.getNome(), token);
+        } else{
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email já cadastrado");
         }
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
 
 
-    @Transactional
-    public ResponseDTO registerAdmin(RegisterRequestDTO body){
-        var user = repository.findByEmail(body.email());
-        if (user.isEmpty()){
-            var newUser = new Usuario();
-            newUser.setAcesso( Usuario.ClienteTipo.ADMIN);
-            newUser.setEmail(body.email());
-            newUser.setNome(body.name());
-            newUser.setPassword(passwordEncoder.encode(body.password()));
-            var token = tokenService.generateToken(newUser);
-            repository.save(newUser);
-            return new ResponseDTO(newUser.getNome(), token);
-        }
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-    }
+
 }

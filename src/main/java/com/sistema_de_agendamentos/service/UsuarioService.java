@@ -79,6 +79,8 @@ public class UsuarioService {
                     )).toList();
     }
 
+
+
     public  Usuario requireTokenUser(){
         Principal principal = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
         String principalString = principal.getName();

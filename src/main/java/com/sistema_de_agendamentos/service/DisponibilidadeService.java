@@ -5,6 +5,7 @@ import com.sistema_de_agendamentos.entity.Disponibilidade;
 import com.sistema_de_agendamentos.entity.Usuario;
 import com.sistema_de_agendamentos.repository.DisponibilidadeRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -23,8 +24,9 @@ public class DisponibilidadeService {
     }
 
     @Transactional
-    public void criarDisponibilidade(Integer id, DisponibilidadeDTO dto){
-        var usuario = usuarioService.findEntity(id);
+    @PreAuthorize("hasRole('PROFISSIONAL')")
+    public void criarDisponibilidade(DisponibilidadeDTO dto){
+        var usuario = usuarioService.findEntity(usuarioService.requireTokenUser().getId());
 
         var agora = java.time.LocalDateTime.now();
 
