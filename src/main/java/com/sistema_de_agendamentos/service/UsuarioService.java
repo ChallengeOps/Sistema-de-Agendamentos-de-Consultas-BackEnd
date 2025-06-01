@@ -62,6 +62,14 @@ public class UsuarioService {
 
     }
 
+    public List<Usuario> listarProfissionais() {
+        var profissionais = usuarioRepository.findByAcesso(Usuario.ClienteTipo.PROFISSIONAL);
+        if (profissionais.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Nenhum profissional cadastrado");
+        }
+        return profissionais;
+    }
+
     public UsuarioDTO updateUsuario(UsuarioDTO dto, Integer id) {
         var usuario = findEntity(id);
         var updateUsuario = usuarioMapper.updateFromDTO(dto, usuario);

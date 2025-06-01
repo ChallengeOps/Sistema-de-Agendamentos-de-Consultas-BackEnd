@@ -1,7 +1,10 @@
 package com.sistema_de_agendamentos.service;
 
-import com.sistema_de_agendamentos.controller.dto.ServicoDTO;
+import com.sistema_de_agendamentos.controller.dto.disponibilidade.DisponibilidadeDTO;
+import com.sistema_de_agendamentos.controller.dto.disponibilidade.DisponibilidadeListagemDTO;
+import com.sistema_de_agendamentos.controller.dto.servico.ServicoDTO;
 import com.sistema_de_agendamentos.controller.dto.ServicoDetailsDTO;
+import com.sistema_de_agendamentos.controller.dto.servico.ServicoListagemDTO;
 import com.sistema_de_agendamentos.entity.Servico;
 
 import com.sistema_de_agendamentos.entity.Usuario;
@@ -25,7 +28,7 @@ public class ServicoService {
     }
 
     @Transactional
-    public void cadastrarServico(Integer id,ServicoDTO dto){
+    public Servico cadastrarServico(Integer id,ServicoDTO dto){
 
         Usuario usuario = usuarioService.findEntity(id);
         if (usuario.getAcesso() != Usuario.ClienteTipo.PROFISSIONAL){
@@ -37,25 +40,42 @@ public class ServicoService {
         servico.setDescricao(dto.descricao());
         servico.setDuracaoEmMinutos(dto.duracaoEmMinutos());
 
-        servicoRepository.save(servico);
-
+        return servicoRepository.save(servico);
     }
 
     @Transactional
-    public List<ServicoDTO> listarServicos() {
+    public List<ServicoListagemDTO> listarServicos() {
+        //crie meu metodo e retorno o meu dto
         List<Servico> servicos = servicoRepository.findAll();
         if (servicos.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Nenhum serviço cadastrado");
         }
         return servicos.stream()
-                .map(servico -> new ServicoDTO(servico.getNome(), servico.getDescricao(), servico.getDuracaoEmMinutos()))
+                .map(servico -> new ServicoListagemDTO(servico.getId(),
+                        servico.getNome(),
+                        servico.getDescricao(),
+                        servico.getDuracaoEmMinutos(), servico.getProfissional().getNome()))
                 .toList();
     }
 
-    public Servico detalharServico(Integer id) {
+    public ServicoDetailsDTO detalharServico(Integer id) {
         Servico servico = servicoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Serviço não encontrado"));
 
+        return new ServicoDetailsDTO(
+                servico.getId(),
+                servico.getNome(),
+                servico.getDescricao(),
+                servico.getDuracaoEmMinutos(),
+                servico.getProfissional().getNome(),
+                servico.getProfissional().getDisponibilidades().stream()
+                        .map(disponibilidade -> new DisponibilidadeListagemDTO(
+                                disponibilidade.getId(),
+                                disponibilidade.getHoraInicio(),
+                                disponibilidade.getHoraFim()
+                        ))
+                        .toList()
+        );
     }
 
 
@@ -101,5 +121,9 @@ public class ServicoService {
     private Servico findEntity(Integer id) {
         return servicoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Serviço não encontrado"));
+    }
+
+    public Servico findServico(Integer integer) {
+        return findEntity( integer);
     }
 }

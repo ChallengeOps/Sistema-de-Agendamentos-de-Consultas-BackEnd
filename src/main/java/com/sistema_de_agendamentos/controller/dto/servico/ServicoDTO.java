@@ -1,4 +1,4 @@
-package com.sistema_de_agendamentos.controller.dto;
+package com.sistema_de_agendamentos.controller.dto.servico;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

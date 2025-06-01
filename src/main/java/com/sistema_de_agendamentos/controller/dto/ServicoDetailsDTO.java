@@ -1,5 +1,8 @@
 package com.sistema_de_agendamentos.controller.dto;
 
+import com.sistema_de_agendamentos.controller.dto.disponibilidade.DisponibilidadeDTO;
+import com.sistema_de_agendamentos.controller.dto.disponibilidade.DisponibilidadeListagemDTO;
+
 import java.util.List;
 
 public record ServicoDetailsDTO(
@@ -8,5 +11,5 @@ public record ServicoDetailsDTO(
         String descricao,
         Integer duracaoEmMinutos,
         String profissional,
-        List<DisponibilidadeDTO> disponibilidades
+        List<DisponibilidadeListagemDTO> disponibilidades
 ) {}

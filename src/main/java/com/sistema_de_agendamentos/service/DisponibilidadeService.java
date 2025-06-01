@@ -1,6 +1,6 @@
 package com.sistema_de_agendamentos.service;
 
-import com.sistema_de_agendamentos.controller.dto.DisponibilidadeDTO;
+import com.sistema_de_agendamentos.controller.dto.disponibilidade.DisponibilidadeDTO;
 import com.sistema_de_agendamentos.entity.Disponibilidade;
 import com.sistema_de_agendamentos.entity.Usuario;
 import com.sistema_de_agendamentos.repository.DisponibilidadeRepository;
@@ -47,17 +47,14 @@ public class DisponibilidadeService {
         disponibilidadeRepository.save(disponibilidade);
     }
 
-    public List<DisponibilidadeDTO> listarDisponibilidades() {
-        var disponibilidades = disponibilidadeRepository.findAll().stream()
-                .map(disponibilidade -> new DisponibilidadeDTO(
-                        disponibilidade.getHoraInicio(),
-                        disponibilidade.getHoraFim(),
-                        disponibilidade.getDiaDeSemana().getNome()))
+
+    @Transactional
+    public List<Disponibilidade> listarPorProfissional(Integer id) {
+        var usuario = usuarioService.findEntity(id);
+        var agora = java.time.LocalDateTime.now();
+        return disponibilidadeRepository.findByProfissional(usuario).stream()
+                .filter(disponibilidade -> disponibilidade.getHoraFim().isAfter(agora))
                 .toList();
-        if (disponibilidades.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Nenhuma disponibilidade cadastrada");
-        }
-        return disponibilidades;
     }
 
     @Transactional
@@ -69,5 +66,9 @@ public class DisponibilidadeService {
     private Disponibilidade findEntity(Integer id) {
         return disponibilidadeRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Disponibilidade não encontrada"));
+    }
+
+    public Disponibilidade findDisponibilidade(Integer integer) {
+        return findEntity(integer);
     }
 }

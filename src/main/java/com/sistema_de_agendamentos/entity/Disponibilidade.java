@@ -55,5 +55,10 @@ public class Disponibilidade {
                 throw new IllegalArgumentException("Dia da semana inválido: " + dia);
             }
         }
+
+        //
+        public String getValor() {
+            return this.name().toLowerCase();
+        }
     }
 }

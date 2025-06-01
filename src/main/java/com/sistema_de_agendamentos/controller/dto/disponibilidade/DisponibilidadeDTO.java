@@ -1,4 +1,4 @@
-package com.sistema_de_agendamentos.controller.dto;
+package com.sistema_de_agendamentos.controller.dto.disponibilidade;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
