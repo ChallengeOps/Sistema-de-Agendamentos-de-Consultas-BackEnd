@@ -31,7 +31,7 @@ public class AgendamentoService {
     @Transactional
     @PreAuthorize("hasRole('CLIENTE')")
     public void criarAgendamento(AgendamentoCreateDTO createDTO){
-        var usuario = usuarioService.findEntity(usuarioService.requireTokenUser().getId());
+        var usuario = usuarioService.requireTokenUser();
         var profissional = usuarioService.findEntity(createDTO.profissionalId());
         var disponibilidade = disponibilidadeService.findDisponibilidade(createDTO.disponibilidadeId());
         var servico = servicoService.findServico(createDTO.servicoId());
@@ -50,10 +50,9 @@ public class AgendamentoService {
         agendamentoRepository.save(agendamento);
     }
 
-    //crie meu metodo de listar agendamento por cliente
     @Transactional
-    public List<Agendamento> listarAgendamentosPorClienteOrCliente() {
-        var usuario = usuarioService.findEntity(usuarioService.requireTokenUser().getId());
+    public List<Agendamento> listarAgendamentosPorCliente() {
+        var usuario = usuarioService.requireTokenUser();
         if(usuario.getAcesso() == Usuario.ClienteTipo.PROFISSIONAL) {
             return agendamentoRepository.findByProfissional(usuario);
         }
@@ -65,7 +64,9 @@ public class AgendamentoService {
 
     public void agendamentoSetStatus(Integer id, String status) {
         var agendamento = agendamentoRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Agendamento não encontrado"));
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                "Agendamento não encontrado"));
 
         if (!status.equals("CONFIRMADO") && !status.equals("CANCELADO")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status inválido");

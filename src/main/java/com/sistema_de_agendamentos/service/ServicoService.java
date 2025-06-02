@@ -32,10 +32,10 @@ public class ServicoService {
     @PreAuthorize("hasRole('PROFISSIONAL')")
     public ServicoListagemDTO cadastrarServico(ServicoDTO dto){
 
-        Usuario usuario = usuarioService.findEntity(usuarioService.requireTokenUser().getId());
+        Usuario profissional = usuarioService.requireTokenUser();
 
         var servico = new Servico();
-        servico.setProfissional(usuario);
+        servico.setProfissional(profissional);
         servico.setNome(dto.nome());
         servico.setDescricao(dto.descricao());
         servico.setDuracaoEmMinutos(dto.duracaoEmMinutos());
@@ -45,7 +45,7 @@ public class ServicoService {
                 servico.getNome(),
                 servico.getDescricao(),
                 servico.getDuracaoEmMinutos(),
-                usuario.getNome()
+                profissional.getNome()
         );
     }
 

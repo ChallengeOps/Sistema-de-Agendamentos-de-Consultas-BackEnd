@@ -26,7 +26,7 @@ public class DisponibilidadeService {
     @Transactional
     @PreAuthorize("hasRole('PROFISSIONAL')")
     public void criarDisponibilidade(DisponibilidadeDTO dto){
-        var usuario = usuarioService.findEntity(usuarioService.requireTokenUser().getId());
+        var usuario = usuarioService.requireTokenUser();
 
         var agora = java.time.LocalDateTime.now();
 

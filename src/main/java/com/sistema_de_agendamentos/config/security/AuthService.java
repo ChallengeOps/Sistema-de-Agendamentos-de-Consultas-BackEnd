@@ -27,7 +27,7 @@ public class AuthService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found"));
         if (passwordEncoder.matches(body.password(), user.getPassword())){
             var token = tokenService.generateToken(user);
-            return new ResponseDTO(user.getNome(), token);
+            return new ResponseDTO(user.getNome(), token, user.getAcesso().name());
         }
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
@@ -43,7 +43,7 @@ public class AuthService {
             newUser.setPassword(passwordEncoder.encode(body.password()));
             var token = tokenService.generateToken(newUser);
             repository.save(newUser);
-            return new ResponseDTO(newUser.getNome(), token);
+            return new ResponseDTO(newUser.getNome(), token, newUser.getAcesso().name());
         }else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email já cadastrado");
         }
@@ -62,7 +62,7 @@ public class AuthService {
             newUser.setPassword(passwordEncoder.encode(body.password()));
             var token = tokenService.generateToken(newUser);
             repository.save(newUser);
-            return new ResponseDTO(newUser.getNome(), token);
+            return new ResponseDTO(newUser.getNome(), token, newUser.getAcesso().name());
         } else{
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email já cadastrado");
         }
