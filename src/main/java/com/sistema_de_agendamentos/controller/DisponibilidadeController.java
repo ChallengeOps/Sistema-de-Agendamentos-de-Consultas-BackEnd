@@ -3,6 +3,7 @@ package com.sistema_de_agendamentos.controller;
 import com.sistema_de_agendamentos.controller.dto.disponibilidade.DisponibilidadeDTO;
 import com.sistema_de_agendamentos.entity.Disponibilidade;
 import com.sistema_de_agendamentos.service.DisponibilidadeService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +20,7 @@ public class DisponibilidadeController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> criarDisponibilidade(@RequestBody DisponibilidadeDTO dto) {
+    public ResponseEntity<Void> criarDisponibilidade(@RequestBody @Valid DisponibilidadeDTO dto) {
         disponibilidadeService.criarDisponibilidade(dto);
         return ResponseEntity.ok().build();
     }

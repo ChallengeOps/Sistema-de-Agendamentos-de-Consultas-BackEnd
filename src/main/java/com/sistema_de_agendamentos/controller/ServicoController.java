@@ -4,6 +4,7 @@ import com.sistema_de_agendamentos.controller.dto.servico.ServicoDTO;
 import com.sistema_de_agendamentos.controller.dto.servico.ServicoDetailsDTO;
 import com.sistema_de_agendamentos.controller.dto.servico.ServicoListagemDTO;
 import com.sistema_de_agendamentos.service.ServicoService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,7 @@ public class ServicoController {
     }
 
     @PostMapping
-    public ResponseEntity<ServicoListagemDTO> criarServico(@RequestBody ServicoDTO body){
+    public ResponseEntity<ServicoListagemDTO> criarServico(@RequestBody @Valid ServicoDTO body){
         var servico = servicoService.cadastrarServico(body);
         return ResponseEntity.ok(servico);
     }
