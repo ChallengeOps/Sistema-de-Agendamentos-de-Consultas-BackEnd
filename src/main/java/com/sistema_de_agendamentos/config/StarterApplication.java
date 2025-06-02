@@ -37,7 +37,7 @@ public class StarterApplication {
         var profissional1 = usuarioService.findByEmail("profissional1@email.com");
         var profissional2 = usuarioService.findByEmail("profissional2@email.com");
 
-        // Disponibilidades para Profissional 1
+        /**
         disponibilidadeService.criarDisponibilidade(
                 profissional1.getId(),
                 new DisponibilidadeDTO("SEGUNDA", LocalDateTime.of(2025, 6, 10, 8, 0), LocalDateTime.of(2025, 6, 10, 12, 0))
@@ -45,6 +45,6 @@ public class StarterApplication {
         servicoService.cadastrarServico(
                 profissional1.getId(),
                 new ServicoDTO("Corte de Cabelo", "Corte masculino", 30)
-        );
+        );**/
     }
 }
