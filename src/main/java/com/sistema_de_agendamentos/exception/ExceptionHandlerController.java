@@ -1,5 +1,6 @@
 package com.sistema_de_agendamentos.exception;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,16 @@ public class ExceptionHandlerController {
         return ResponseEntity.status(ex.getStatusCode()).body(responseError);
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ResponseError> handleConstraintViolation(ConstraintViolationException ex) {
+        String mensagem = "Violação de restrição do banco de dados.";
+        if (ex.getConstraintName() != null && ex.getConstraintName().toLowerCase().contains("unique")) {
+            mensagem = "Já existe um registro com este valor.";
+        }
+        ResponseError responseError = new ResponseError(HttpStatus.CONFLICT, mensagem);
+        return new ResponseEntity<>(responseError, HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResponseError> handleValidationExceptions(MethodArgumentNotValidException ex) {
         List<String> errors = ex.getBindingResult()
@@ -43,27 +54,27 @@ public class ExceptionHandlerController {
         return new ResponseEntity<>(responseError, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ResponseError> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
-        ResponseError responseError = new ResponseError(HttpStatus.CONFLICT, "Violação de integridade de dados.");
-        return new ResponseEntity<>(responseError, HttpStatus.CONFLICT);
-    }
-
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ResponseError> handleIllegalArgument(IllegalArgumentException ex) {
         ResponseError responseError = new ResponseError(HttpStatus.BAD_REQUEST, ex.getMessage());
         return new ResponseEntity<>(responseError, HttpStatus.BAD_REQUEST);
     }
 
+    // Trata erro de acesso negado por @PreAuthorize
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ResponseError> handleAccessDenied(AccessDeniedException ex) {
+    public ResponseEntity<ResponseError> handleAccessDeniedException(AccessDeniedException ex) {
         ResponseError responseError = new ResponseError(HttpStatus.FORBIDDEN, "Acesso negado.");
         return new ResponseEntity<>(responseError, HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ResponseError> handleGenericException(Exception ex) {
-        ResponseError responseError = new ResponseError(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno do servidor.");
-        return new ResponseEntity<>(responseError, HttpStatus.INTERNAL_SERVER_ERROR);
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ResponseError> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        String mensagem = "Violação de restrição de valor único.";
+        if (ex.getRootCause() != null && ex.getRootCause().getMessage() != null &&
+                ex.getRootCause().getMessage().toLowerCase().contains("unique")) {
+            mensagem = "Já existe um registro com este valor.";
+        }
+        ResponseError responseError = new ResponseError(HttpStatus.CONFLICT, mensagem);
+        return new ResponseEntity<>(responseError, HttpStatus.CONFLICT);
     }
 }

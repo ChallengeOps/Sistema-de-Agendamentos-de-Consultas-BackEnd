@@ -20,15 +20,16 @@ public class TokenService {
 
     public String generateToken(Usuario user){
         try{
-            Algorithm algorithm = Algorithm.HMAC256(secret);
 
+            Algorithm algorithm = Algorithm.HMAC256(secret);
             String token = JWT.create()
                     .withIssuer("login-auth-api")
                     .withSubject(user.getEmail())
-                    .withClaim("role", user.getAcesso().name())
+                    .withClaim("role", "ROLE_" + user.getAcesso().name())
                     .withExpiresAt(this.generateExpirationDate())
                     .sign(algorithm);
             return token;
+
         } catch (JWTCreationException e) {
             throw new RuntimeException(e);
         }
@@ -61,5 +62,4 @@ public class TokenService {
                 .getClaim("role")
                 .asString();
     }
-
 }

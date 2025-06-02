@@ -30,4 +30,17 @@ public class AuthController {
         return ResponseEntity.ok(register);
     }
 
+    @PostMapping("/registerProfissional")
+    public ResponseEntity registerProfissional(@RequestBody RegisterRequestDTO body){
+        var register = authService.registerProfissional(body);
+        return ResponseEntity.ok(register);
+    }
+
+    @PostMapping("/registerAdmin")
+    public ResponseEntity registerAdmin(@RequestBody RegisterRequestDTO body){
+        var register = authService.registerAdmin(body);
+        return ResponseEntity.ok(register);
+    }
+
+
 }

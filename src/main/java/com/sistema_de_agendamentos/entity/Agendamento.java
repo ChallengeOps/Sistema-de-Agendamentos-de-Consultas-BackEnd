@@ -31,5 +31,25 @@ public class Agendamento {
     @JoinColumn(name = "disponibilidade_id", unique = true)
     private Disponibilidade disponibilidade;
 
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
+    public enum Status {
+        PENDENTE,
+        CONFIRMADO,
+        CANCELADO,
+        CONCLUIDO;
+
+        public static Status fromString(String status) {
+            if (status == null) {
+                throw new IllegalArgumentException("Status não pode ser nulo");
+            }
+            try {
+                return Status.valueOf(status.trim().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Status inválido: " + status);
+            }
+        }
+    }
     // Getters and Setters can be generated or manually added here
 }
