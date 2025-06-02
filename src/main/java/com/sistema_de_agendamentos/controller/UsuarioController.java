@@ -1,5 +1,6 @@
 package com.sistema_de_agendamentos.controller;
 
+import com.sistema_de_agendamentos.controller.dto.usuario.UsuarioPerfilDTO;
 import com.sistema_de_agendamentos.entity.Usuario;
 import com.sistema_de_agendamentos.service.UsuarioService;
 import org.springframework.http.HttpStatus;
@@ -16,17 +17,13 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Integer id){
-        usuarioService.deleteById(id);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
-    }
-
     @GetMapping("/me")
-    public ResponseEntity<Usuario> me(){
-        var user = usuarioService.requireTokenUser();
+    public ResponseEntity<UsuarioPerfilDTO> getPerfil() {
+        Usuario usuario = usuarioService.requireTokenUser();
+        var user = new UsuarioPerfilDTO(usuario.getId(), usuario.getNome(), usuario.getEmail(), usuario.getAcesso());
         return ResponseEntity.ok(user);
     }
+
 
 
 }

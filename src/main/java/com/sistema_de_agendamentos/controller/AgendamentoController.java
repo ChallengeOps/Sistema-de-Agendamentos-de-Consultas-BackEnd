@@ -19,7 +19,7 @@ public class AgendamentoController {
     }
 
     @PostMapping
-    public ResponseEntity<String> criarAgendamento(AgendamentoCreateDTO createDTO) {
+    public ResponseEntity<String> criarAgendamento(@RequestBody AgendamentoCreateDTO createDTO) {
         agendamentoService.criarAgendamento(createDTO);
         return ResponseEntity.ok("Agendamento criado com sucesso");
     }
@@ -31,13 +31,13 @@ public class AgendamentoController {
     }
 
     @PutMapping("/{id}/cancelar")
-    public ResponseEntity<String> cancelarAgendamento(Integer id) {
+    public ResponseEntity<String> cancelarAgendamento(@PathVariable Integer id) {
         agendamentoService.cancelarAgendamento(id);
         return ResponseEntity.ok("Agendamento cancelado com sucesso");
     }
 
     @PutMapping("/{id}/concluir")
-    public ResponseEntity<String> concluirAgendamento(Integer id) {
+    public ResponseEntity<String> concluirAgendamento(@PathVariable Integer id) {
         agendamentoService.concluirAgendamento(id);
         return ResponseEntity.ok("Agendamento concluído com sucesso");
     }

@@ -31,7 +31,9 @@ public class AgendamentoService {
     @Transactional
     @PreAuthorize("hasRole('CLIENTE')")
     public void criarAgendamento(AgendamentoCreateDTO createDTO){
+        System.out.println("Criando agendamento com DTO: " + createDTO);
         var usuario = usuarioService.requireTokenUser();
+        System.out.println(usuario.getNome());
         var profissional = usuarioService.findEntity(createDTO.profissionalId());
         var disponibilidade = disponibilidadeService.findDisponibilidade(createDTO.disponibilidadeId());
         var servico = servicoService.findServico(createDTO.servicoId());

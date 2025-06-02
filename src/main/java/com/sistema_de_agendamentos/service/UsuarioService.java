@@ -83,11 +83,7 @@ public class UsuarioService {
 
     public  Usuario requireTokenUser(){
         Principal principal = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
-        String principalString = principal.getName();
-
-        String email = StringUtil.extrairEmail(principalString);
-        System.out.println("Email extraído: " + email);
-
+        String email = principal.getName();
         return findByEmail(email);
     }
 

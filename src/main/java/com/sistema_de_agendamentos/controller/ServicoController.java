@@ -15,6 +15,10 @@ public class ServicoController {
 
     private ServicoService servicoService;
 
+    public ServicoController(ServicoService servicoService) {
+        this.servicoService = servicoService;
+    }
+
     @PostMapping
     public ResponseEntity<ServicoListagemDTO> criarServico(@RequestBody ServicoDTO body){
         var servico = servicoService.cadastrarServico(body);

@@ -18,6 +18,11 @@ public class ProfissionalController {
     private UsuarioService usuarioService;
     private ServicoService servicoService;
 
+    public ProfissionalController(UsuarioService usuarioService, ServicoService servicoService) {
+        this.usuarioService = usuarioService;
+        this.servicoService = servicoService;
+    }
+
     @GetMapping("/servicos")
     private ResponseEntity<List> listarServicosPorProfissional() {
         var servicos = servicoService.listarServicosPorProfissional();
@@ -30,8 +35,4 @@ public class ProfissionalController {
         return ResponseEntity.ok(profissionais);
     }
 
-    public ResponseEntity<List<Disponibilidade> > listarDisponibilidadesPorProfissional(Integer id) {
-        var disponibilidades = d(id);
-        return ResponseEntity.ok(disponibilidades);
-    }
 }

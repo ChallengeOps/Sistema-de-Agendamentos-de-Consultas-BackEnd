@@ -24,7 +24,7 @@ public class DisponibilidadeController {
         return ResponseEntity.ok().build();
     }
 
-    @RequestMapping("/profissional/{id}")
+    @GetMapping("/profissional/{id}")
     public ResponseEntity<List<Disponibilidade>> listarPorProfissional(@PathVariable Integer id) {
         var disponibilidades = disponibilidadeService.listarPorProfissional(id);
         return ResponseEntity.ok(disponibilidades);
