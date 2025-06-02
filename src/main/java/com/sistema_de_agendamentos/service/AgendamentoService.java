@@ -62,6 +62,34 @@ public class AgendamentoService {
         throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
     }
 
+    public void cancelarAgendamento(Integer id) {
+        var agendamento = agendamentoRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                "Agendamento não encontrado"));
+
+        if (agendamento.getStatus() == Agendamento.Status.CANCELADO) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Agendamento já cancelado");
+        }
+
+        agendamento.setStatus(Agendamento.Status.CANCELADO);
+        agendamentoRepository.save(agendamento);
+    }
+
+    public void concluirAgendamento(Integer id) {
+        var agendamento = agendamentoRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                "Agendamento não encontrado"));
+
+        if (agendamento.getStatus() == Agendamento.Status.CONCLUIDO) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Agendamento já concluído");
+        }
+
+        agendamento.setStatus(Agendamento.Status.CONCLUIDO);
+        agendamentoRepository.save(agendamento);
+    }
+
     public void agendamentoSetStatus(Integer id, String status) {
         var agendamento = agendamentoRepository.findById(id)
                 .orElseThrow(() ->

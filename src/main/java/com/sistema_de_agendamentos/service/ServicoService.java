@@ -88,10 +88,11 @@ public class ServicoService {
 
 
     @Transactional
-    public List<ServicoDTO> listarServicosPorProfissional(Integer id) {
-        Usuario usuario = usuarioService.findEntity(id);
+    @PreAuthorize("hasRole('PROFISSIONAL')")
+    public List<ServicoDTO> listarServicosPorProfissional() {
+        Usuario usuario = usuarioService.requireTokenUser();
 
-        List<Servico> servicos = servicoRepository.findByProfissionalId(id);
+        List<Servico> servicos = servicoRepository.findByProfissionalId(usuario.getId());
         if (servicos.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Nenhum serviço encontrado para o profissional");
         }

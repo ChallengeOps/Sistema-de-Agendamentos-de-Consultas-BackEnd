@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/usuario")
+@RequestMapping("/usuario")
 public class UsuarioController {
 
     private UsuarioService usuarioService;
@@ -22,10 +22,11 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
-    @GetMapping
-    public String var() {
-        Usuario user = usuarioService.requireTokenUser();
-        return "Olá, " + user.getNome() + "! Você está autenticado como " + user.getEmail() + ".";
+    @GetMapping("/me")
+    public ResponseEntity<Usuario> me(){
+        var user = usuarioService.requireTokenUser();
+        return ResponseEntity.ok(user);
     }
+
 
 }
