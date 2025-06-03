@@ -110,7 +110,7 @@ public class ServicoService {
 
 
 
-    private Servico findEntity(Integer id) {
+    public Servico findEntity(Integer id) {
         return servicoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Serviço não encontrado"));
     }

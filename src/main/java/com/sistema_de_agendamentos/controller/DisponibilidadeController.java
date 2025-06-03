@@ -1,5 +1,6 @@
 package com.sistema_de_agendamentos.controller;
 
+import com.sistema_de_agendamentos.controller.dto.disponibilidade.DisponibilidadeAgendarDTO;
 import com.sistema_de_agendamentos.controller.dto.disponibilidade.DisponibilidadeDTO;
 import com.sistema_de_agendamentos.entity.Disponibilidade;
 import com.sistema_de_agendamentos.service.DisponibilidadeService;
@@ -29,5 +30,11 @@ public class DisponibilidadeController {
     public ResponseEntity<List<Disponibilidade>> listarPorProfissional(@PathVariable Integer id) {
         var disponibilidades = disponibilidadeService.listarPorProfissional(id);
         return ResponseEntity.ok(disponibilidades);
+    }
+
+    @GetMapping("/servico/{id}")
+    public ResponseEntity<DisponibilidadeAgendarDTO> buscarPorServico(@PathVariable Integer id) {
+        var dto = disponibilidadeService.busacarPorServico(id);
+        return ResponseEntity.ok(dto);
     }
 }

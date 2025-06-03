@@ -33,10 +33,11 @@ public class AgendamentoService {
     public void criarAgendamento(AgendamentoCreateDTO createDTO){
         System.out.println("Criando agendamento com DTO: " + createDTO);
         var usuario = usuarioService.requireTokenUser();
+
         System.out.println(usuario.getNome());
-        var profissional = usuarioService.findEntity(createDTO.profissionalId());
-        var disponibilidade = disponibilidadeService.findDisponibilidade(createDTO.disponibilidadeId());
         var servico = servicoService.findServico(createDTO.servicoId());
+        var profissional = usuarioService.findEntity(servico.getProfissional().getId());
+        var disponibilidade = disponibilidadeService.findDisponibilidade(createDTO.disponibilidadeId());
 
         if (!disponibilidade.getProfissional().equals(servico.getProfissional())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Serviço e disponibilidade devem pertencer ao mesmo profissional");
