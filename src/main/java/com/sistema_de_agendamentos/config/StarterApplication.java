@@ -14,11 +14,15 @@ import com.sistema_de_agendamentos.service.UsuarioService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 
 @Configuration
 public class StarterApplication {
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private UsuarioService usuarioService;
@@ -31,11 +35,11 @@ public class StarterApplication {
 
     @PostConstruct
     public void start(){
-        usuarioService.create(new UsuarioRegisterDTO( "Cliente Um", "cliente1@email.com","123", Usuario.ClienteTipo.CLIENTE));
-        usuarioService.create(new UsuarioRegisterDTO("Cliente Dois", "cliente2@email.com", "123", Usuario.ClienteTipo.CLIENTE));
+        usuarioService.create(new UsuarioRegisterDTO( "Cliente Um", "cliente1@email.com",passwordEncoder.encode("123456"), Usuario.ClienteTipo.CLIENTE));
+        usuarioService.create(new UsuarioRegisterDTO("Cliente Dois", "cliente2@email.com", passwordEncoder.encode("123456"), Usuario.ClienteTipo.CLIENTE));
 
-        var profissional1 = usuarioService.create(new UsuarioRegisterDTO("Douglas Ribeiro", "profissional1@email.com", "123" , Usuario.ClienteTipo.PROFISSIONAL));
-        var profissional2 = usuarioService.create(new UsuarioRegisterDTO( "Gutemberg Chavez", "profissional2@email.com","123", Usuario.ClienteTipo.PROFISSIONAL));
+        var profissional1 = usuarioService.create(new UsuarioRegisterDTO("Douglas Ribeiro", "profissional1@email.com", passwordEncoder.encode("123456") , Usuario.ClienteTipo.PROFISSIONAL));
+        var profissional2 = usuarioService.create(new UsuarioRegisterDTO( "Gutemberg Chavez", "profissional2@email.com",passwordEncoder.encode("123456"), Usuario.ClienteTipo.PROFISSIONAL));
 
 
         var servico = new Servico();
