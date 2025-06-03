@@ -10,10 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.Collections;
 
 @Component
@@ -27,24 +29,27 @@ public class SecurityFilter extends OncePerRequestFilter {
     UsuarioRepository userRepository;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+
         var token = this.recoverToken(request);
         var login = tokenService.validateToken(token);
 
-        if (login != null) {
+        if (login != null && !login.isBlank()) {
             Usuario user = userRepository.findByEmail(login)
-                    .orElseThrow(() -> new RuntimeException("User Not Found"));
+                    .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + login));
 
-            String role = tokenService.getRoleFromToken(token); // pega a role única
-
+            String role = tokenService.getRoleFromToken(token);
             var authorities = Collections.singletonList(new SimpleGrantedAuthority(role));
 
-            var authentication = new UsernamePasswordAuthenticationToken(user, null, authorities);
+            var authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+
         }
 
         filterChain.doFilter(request, response);
     }
+
 
     private String recoverToken(HttpServletRequest request){
         var authHeader = request.getHeader("Authorization");

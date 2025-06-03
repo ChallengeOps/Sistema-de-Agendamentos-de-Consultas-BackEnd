@@ -42,8 +42,7 @@ public class Usuario {
 
     public enum ClienteTipo{
         CLIENTE,
-        PROFISSIONAL,
-        ADMIN;
+        PROFISSIONAL;
 
         //faca aqui um getnome do enum ClienteTipo
         public String getNome() {

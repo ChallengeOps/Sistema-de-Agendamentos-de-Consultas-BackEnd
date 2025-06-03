@@ -31,10 +31,13 @@ public class AgendamentoService {
     @Transactional
     @PreAuthorize("hasRole('CLIENTE')")
     public void criarAgendamento(AgendamentoCreateDTO createDTO){
+        System.out.println("Criando agendamento com DTO: " + createDTO);
         var usuario = usuarioService.requireTokenUser();
-        var profissional = usuarioService.findEntity(createDTO.profissionalId());
-        var disponibilidade = disponibilidadeService.findDisponibilidade(createDTO.disponibilidadeId());
-        var servico = servicoService.findServico(createDTO.servicoId());
+
+        System.out.println(usuario.getNome());
+        var servico = servicoService.findEntity(createDTO.servicoId());
+        var profissional = usuarioService.findEntity(servico.getProfissional().getId());
+        var disponibilidade = disponibilidadeService.findEntity(createDTO.disponibilidadeId());
 
         if (!disponibilidade.getProfissional().equals(servico.getProfissional())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Serviço e disponibilidade devem pertencer ao mesmo profissional");
@@ -62,6 +65,34 @@ public class AgendamentoService {
         throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
     }
 
+    public void cancelarAgendamento(Integer id) {
+        var agendamento = agendamentoRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                "Agendamento não encontrado"));
+
+        if (agendamento.getStatus() == Agendamento.Status.CANCELADO) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Agendamento já cancelado");
+        }
+
+        agendamento.setStatus(Agendamento.Status.CANCELADO);
+        agendamentoRepository.save(agendamento);
+    }
+
+    public void concluirAgendamento(Integer id) {
+        var agendamento = agendamentoRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                "Agendamento não encontrado"));
+
+        if (agendamento.getStatus() == Agendamento.Status.CONCLUIDO) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Agendamento já concluído");
+        }
+
+        agendamento.setStatus(Agendamento.Status.CONCLUIDO);
+        agendamentoRepository.save(agendamento);
+    }
+
     public void agendamentoSetStatus(Integer id, String status) {
         var agendamento = agendamentoRepository.findById(id)
                 .orElseThrow(() ->
@@ -74,6 +105,5 @@ public class AgendamentoService {
         agendamento.setStatus(Agendamento.Status.valueOf(status));
         agendamentoRepository.save(agendamento);
     }
-
 
 }
