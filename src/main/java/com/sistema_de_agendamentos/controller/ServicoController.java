@@ -33,10 +33,4 @@ public class ServicoController {
 
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ServicoDetailsDTO> detalharServicoPorId (@PathVariable Integer id){
-        var servico = servicoService.detalharServico(id);
-        return ResponseEntity.ok(servico);
-    }
-
 }

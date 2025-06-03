@@ -4,6 +4,7 @@ import com.sistema_de_agendamentos.config.security.dto.LoginRequestDTO;
 import com.sistema_de_agendamentos.config.security.dto.RegisterRequestDTO;
 import com.sistema_de_agendamentos.config.security.dto.ResponseDTO;
 import com.sistema_de_agendamentos.entity.Usuario;
+import com.sistema_de_agendamentos.mapper.UsuarioMapper;
 import com.sistema_de_agendamentos.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ public class AuthService {
     private final UsuarioRepository repository;
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
+    private final UsuarioMapper usuarioMapper;
 
     @Transactional
     public ResponseDTO login(LoginRequestDTO body){
@@ -29,22 +31,20 @@ public class AuthService {
             var token = tokenService.generateToken(user);
             return new ResponseDTO(user.getNome(), token, user.getAcesso().name());
         }
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Senha incorreta");
     }
 
     @Transactional
     public ResponseDTO registerUsuario(RegisterRequestDTO body){
         var user = repository.findByEmail(body.email());
         if (user.isEmpty()){
-            var newUser = new Usuario();
-            newUser.setAcesso( Usuario.ClienteTipo.CLIENTE);
-            newUser.setEmail(body.email());
-            newUser.setNome(body.name());
+            var newUser = usuarioMapper.fromRegisterRequestDTO(body);
+            newUser.setAcesso(Usuario.ClienteTipo.CLIENTE);
             newUser.setPassword(passwordEncoder.encode(body.password()));
             var token = tokenService.generateToken(newUser);
             repository.save(newUser);
             return new ResponseDTO(newUser.getNome(), token, newUser.getAcesso().name());
-        }else {
+        } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email já cadastrado");
         }
     }
@@ -53,12 +53,9 @@ public class AuthService {
     @Transactional
     public ResponseDTO registerProfissional(RegisterRequestDTO body){
         var user = repository.findByEmail(body.email());
-
         if (user.isEmpty()){
-            var newUser = new Usuario();
+            var newUser = usuarioMapper.fromRegisterRequestDTO(body);
             newUser.setAcesso( Usuario.ClienteTipo.PROFISSIONAL);
-            newUser.setEmail(body.email());
-            newUser.setNome(body.name());
             newUser.setPassword(passwordEncoder.encode(body.password()));
             var token = tokenService.generateToken(newUser);
             repository.save(newUser);
@@ -67,7 +64,5 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email já cadastrado");
         }
     }
-
-
 
 }

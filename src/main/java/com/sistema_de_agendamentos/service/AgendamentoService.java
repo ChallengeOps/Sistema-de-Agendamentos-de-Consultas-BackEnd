@@ -35,9 +35,9 @@ public class AgendamentoService {
         var usuario = usuarioService.requireTokenUser();
 
         System.out.println(usuario.getNome());
-        var servico = servicoService.findServico(createDTO.servicoId());
+        var servico = servicoService.findEntity(createDTO.servicoId());
         var profissional = usuarioService.findEntity(servico.getProfissional().getId());
-        var disponibilidade = disponibilidadeService.findDisponibilidade(createDTO.disponibilidadeId());
+        var disponibilidade = disponibilidadeService.findEntity(createDTO.disponibilidadeId());
 
         if (!disponibilidade.getProfissional().equals(servico.getProfissional())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Serviço e disponibilidade devem pertencer ao mesmo profissional");
@@ -105,6 +105,5 @@ public class AgendamentoService {
         agendamento.setStatus(Agendamento.Status.valueOf(status));
         agendamentoRepository.save(agendamento);
     }
-
 
 }

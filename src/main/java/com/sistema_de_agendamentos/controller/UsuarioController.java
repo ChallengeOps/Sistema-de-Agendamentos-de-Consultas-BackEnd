@@ -19,9 +19,7 @@ public class UsuarioController {
 
     @GetMapping("/me")
     public ResponseEntity<UsuarioPerfilDTO> getPerfil() {
-        Usuario usuario = usuarioService.requireTokenUser();
-        var user = new UsuarioPerfilDTO(usuario.getId(), usuario.getNome(), usuario.getEmail(), usuario.getAcesso());
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(usuarioService.me());
     }
 
 

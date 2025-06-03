@@ -14,6 +14,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.Optional;
 
+import static com.sistema_de_agendamentos.utils.DateFormaterUtils.dateFormate;
+
 @Service
 public class DisponibilidadeService {
 
@@ -31,7 +33,6 @@ public class DisponibilidadeService {
     @PreAuthorize("hasRole('PROFISSIONAL')")
     public void criarDisponibilidade(DisponibilidadeDTO dto){
         var usuario = usuarioService.requireTokenUser();
-
         var agora = java.time.LocalDateTime.now();
 
         if (dto.horaInicio().isBefore(agora) || dto.horaFim().isBefore(agora)) {
@@ -64,7 +65,6 @@ public class DisponibilidadeService {
         );
     }
 
-
     @Transactional
     public List<Disponibilidade> listarPorProfissional(Integer id) {
         var usuario = usuarioService.findEntity(id);
@@ -74,21 +74,25 @@ public class DisponibilidadeService {
                 .toList();
     }
 
-
-    private String dateFormate(Disponibilidade disponibilidade){
-        //faca um metodo pra retornar a data nesse padrao 02/06/2025 (Segunda-feira) - 08:00 às 12:00\
-        var diaDaSemana = disponibilidade.getDiaDeSemana().getValor();
-        var horaInicio = disponibilidade.getHoraInicio().toLocalTime().toString();
-        var horaFim = disponibilidade.getHoraFim().toLocalTime().toString();
-        return String.format("%s - %s às %s", diaDaSemana, horaInicio, horaFim);
+    @Transactional
+    @PreAuthorize("hasRole('PROFISSIONAL')")
+    public void delete(Integer id) {
+        var disponibilidade = findEntityPermission(id);
+        disponibilidadeRepository.delete(disponibilidade);
     }
 
-    private Disponibilidade findEntity(Integer id) {
+
+    protected Disponibilidade findEntity(Integer id) {
         return disponibilidadeRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Disponibilidade não encontrada"));
     }
 
-    public Disponibilidade findDisponibilidade(Integer integer) {
-        return findEntity(integer);
+    protected Disponibilidade findEntityPermission(Integer id) {
+        var disponibilidade = findEntity(id);
+        var usuario = usuarioService.requireTokenUser();
+        if (!disponibilidade.getProfissional().getId().equals(usuario.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Você não tem permissão para acessar esta disponibilidade");
+        }
+        return disponibilidade;
     }
 }
