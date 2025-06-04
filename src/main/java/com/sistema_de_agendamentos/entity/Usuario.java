@@ -43,10 +43,8 @@ public class Usuario {
         CLIENTE,
         PROFISSIONAL;
 
-        //faca aqui um getnome do enum ClienteTipo
         public String getNome() {
             return this.name();
         }
-
     }
 }

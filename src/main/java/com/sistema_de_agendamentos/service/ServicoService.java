@@ -43,20 +43,20 @@ public class ServicoService {
 
     @Transactional
     @PreAuthorize("hasRole('PROFISSIONAL')")
-    public List<ServicoDTO> listarServicosPorProfissional() {
+    public List<ServicoListagemDTO> listarServicosPorProfissional() {
         Usuario usuario = usuarioService.requireTokenUser();
-        List<Servico> servicos = servicoRepository.findByProfissionalId(usuario.getId());
+        List<Servico> servicos = usuario.getServicos();
         if (servicos.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Nenhum serviço encontrado para o profissional");
         }
         return servicos.stream()
-                .map(servico -> new ServicoDTO(servico.getNome(), servico.getDescricao(), servico.getDuracaoEmMinutos()))
+                .map(s -> new ServicoListagemDTO(s.getId(), s.getNome(), s.getDescricao(), s.getDuracaoEmMinutos(), s.getProfissional().getNome()))
                 .toList();
     }
 
     @Transactional
     @PreAuthorize("hasRole('PROFISSIONAL')")
-    public void delete(Integer id) {
+    public void deletarServico(Integer id) {
         Servico servico = findEntityPermission(id);
         servicoRepository.delete(servico);
     }

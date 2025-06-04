@@ -30,7 +30,12 @@ public class ServicoController {
     public ResponseEntity<List<ServicoListagemDTO>> listarTodos(){
         var servicos = servicoService.listarServicos();
         return ResponseEntity.ok(servicos);
+    }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarServico(@PathVariable Integer id) {
+        servicoService.deletarServico(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

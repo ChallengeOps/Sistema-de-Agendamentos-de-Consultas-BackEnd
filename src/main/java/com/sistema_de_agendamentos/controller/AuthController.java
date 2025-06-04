@@ -38,6 +38,4 @@ public class AuthController {
         return ResponseEntity.ok(register);
     }
 
-
-
 }

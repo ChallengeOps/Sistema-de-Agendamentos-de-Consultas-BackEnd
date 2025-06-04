@@ -1,4 +1,3 @@
-// src/main/java/com/sistema_de_agendamentos/utils/DateFormaterUtils.java
 package com.sistema_de_agendamentos.utils;
 
 import com.sistema_de_agendamentos.controller.dto.disponibilidade.DisponibilidadeDTO;

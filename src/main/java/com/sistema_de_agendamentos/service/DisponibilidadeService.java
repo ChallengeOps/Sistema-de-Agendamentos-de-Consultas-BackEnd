@@ -89,14 +89,12 @@ public class DisponibilidadeService {
                 .toList();
     }
 
-
     @Transactional
     @PreAuthorize("hasRole('PROFISSIONAL')")
     public void delete(Integer id) {
         var disponibilidade = findEntityPermission(id);
         disponibilidadeRepository.delete(disponibilidade);
     }
-
 
     protected Disponibilidade findEntity(Integer id) {
         return disponibilidadeRepository.findById(id)

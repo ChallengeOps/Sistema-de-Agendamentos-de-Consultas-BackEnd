@@ -1,5 +1,6 @@
 package com.sistema_de_agendamentos.controller;
 
+import com.sistema_de_agendamentos.controller.dto.servico.ServicoListagemDTO;
 import com.sistema_de_agendamentos.controller.dto.usuario.ProfissionaisDTO;
 import com.sistema_de_agendamentos.entity.Disponibilidade;
 import com.sistema_de_agendamentos.service.ServicoService;
@@ -24,7 +25,7 @@ public class ProfissionalController {
     }
 
     @GetMapping("/servicos")
-    private ResponseEntity<List> listarServicosPorProfissional() {
+    private ResponseEntity<List<ServicoListagemDTO>> listarServicosPorProfissional() {
         var servicos = servicoService.listarServicosPorProfissional();
         return ResponseEntity.ok(servicos);
     }
