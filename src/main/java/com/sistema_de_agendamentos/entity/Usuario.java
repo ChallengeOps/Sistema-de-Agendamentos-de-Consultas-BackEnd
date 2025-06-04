@@ -35,8 +35,6 @@ public class Usuario {
     @OneToMany(mappedBy = "profissional", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Disponibilidade> disponibilidades;
 
-
-
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ClienteTipo acesso;

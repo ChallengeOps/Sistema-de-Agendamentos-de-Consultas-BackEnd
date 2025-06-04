@@ -50,22 +50,31 @@ public class AgendamentoService {
     }
 
     @Transactional
-    public List<AgendamentoDTO> listarAgendamentosPorCliente() {
+    public List<AgendamentoDTO> listarAgendamentosParaUsuarioAtual() {
         var usuario = usuarioService.requireTokenUser();
-        var agendamentos = usuario.getAgendamentos().stream()
-            .filter(p -> p.getStatus() == Agendamento.Status.PENDENTE)
+        List<Agendamento> agendamentos;
+
+        if (usuario.getAcesso() == Usuario.ClienteTipo.CLIENTE) {
+            agendamentos = usuario.getAgendamentos();
+        } else if (usuario.getAcesso() == Usuario.ClienteTipo.PROFISSIONAL) {
+            agendamentos = usuario.getServicos().stream()
+                .flatMap(servico -> servico.getAgendamentos().stream())
+                .toList();
+        } else {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Tipo de usuário não suportado");
+        }
+        var dtos = agendamentos.stream()
             .map(p -> new AgendamentoDTO(
                 p.getId(),
-                p.getProfissional().getNome(),
-                p.getServico().getNome(),
+                p.getCliente() != null ? p.getCliente().getNome() : null,
+                p.getServico() != null ? p.getServico().getNome() : null,
                 DateFormaterUtils.dateFormate(p.getDisponibilidade())
             ))
             .toList();
-
-        if (agendamentos.isEmpty()) {
+        if (dtos.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Nenhum agendamento encontrado");
         }
-        return agendamentos;
+        return dtos;
     }
 
     public void delete(Integer id) {
