@@ -26,14 +26,15 @@ public class Usuario {
     @Column(nullable = false)
     private String password;
 
-    @OneToMany(mappedBy = "cliente", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "cliente", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Agendamento> agendamentos;
 
-    @OneToMany(mappedBy = "profissional", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "profissional", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Servico> servicos;
 
-    @OneToMany(mappedBy = "profissional", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "profissional", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Disponibilidade> disponibilidades;
+
 
 
     @Column(nullable = false)
