@@ -74,33 +74,29 @@ public class StarterApplication {
 // Disponibilidade para profissional1
         var disponibilidade1 = new Disponibilidade();
         disponibilidade1.setProfissional(profissional1);
-        disponibilidade1.setHoraInicio(LocalDateTime.of(2025, 6, 2, 8, 0)); // 02/06/2025 08:00
-        disponibilidade1.setHoraFim(LocalDateTime.of(2025, 6, 2, 12, 0));   // 02/06/2025 12:00
-        disponibilidade1.setDiaDeSemana(Disponibilidade.DiaDeSemana.SEGUNDA);
+        disponibilidade1.setHoraInicio(LocalDateTime.of(2025, 7, 2, 8, 0)); // 02/06/2025 08:00
+        disponibilidade1.setHoraFim(LocalDateTime.of(2025, 7, 2, 12, 0));   // 02/06/2025 12:00
         disponibilidadeRepository.save(disponibilidade1);
 
 // Disponibilidade para profissional2
         var disponibilidade2 = new Disponibilidade();
         disponibilidade2.setProfissional(profissional2);
-        disponibilidade2.setHoraInicio(LocalDateTime.of(2025, 6, 3, 14, 0)); // 03/06/2025 14:00
-        disponibilidade2.setHoraFim(LocalDateTime.of(2025, 6, 3, 18, 0));    // 03/06/2025 18:00
-        disponibilidade2.setDiaDeSemana(Disponibilidade.DiaDeSemana.TERCA);
+        disponibilidade2.setHoraInicio(LocalDateTime.of(2025, 7, 3, 14, 0)); // 03/06/2025 14:00
+        disponibilidade2.setHoraFim(LocalDateTime.of(2025, 7, 3, 18, 0));    // 03/06/2025 18:00
         disponibilidadeRepository.save(disponibilidade2);
 
 // Disponibilidade extra para profissional1
         var disponibilidade3 = new Disponibilidade();
         disponibilidade3.setProfissional(profissional1);
-        disponibilidade3.setHoraInicio(LocalDateTime.of(2025, 6, 4, 9, 0)); // 04/06/2025 09:00
-        disponibilidade3.setHoraFim(LocalDateTime.of(2025, 6, 4, 11, 0));   // 04/06/2025 11:00
-        disponibilidade3.setDiaDeSemana(Disponibilidade.DiaDeSemana.QUARTA);
+        disponibilidade3.setHoraInicio(LocalDateTime.of(2025, 7, 4, 9, 0)); // 04/06/2025 09:00
+        disponibilidade3.setHoraFim(LocalDateTime.of(2025, 7, 4, 11, 0));   // 04/06/2025 11:00
         disponibilidadeRepository.save(disponibilidade3);
 
 // Disponibilidade extra para profissional2
         var disponibilidade4 = new Disponibilidade();
         disponibilidade4.setProfissional(profissional2);
-        disponibilidade4.setHoraInicio(LocalDateTime.of(2025, 6, 5, 10, 0)); // 05/06/2025 10:00
-        disponibilidade4.setHoraFim(LocalDateTime.of(2025, 6, 5, 13, 0));    // 05/06/2025 13:00
-        disponibilidade4.setDiaDeSemana(Disponibilidade.DiaDeSemana.QUINTA);
+        disponibilidade4.setHoraInicio(LocalDateTime.of(2025, 7, 5, 10, 0)); // 05/06/2025 10:00
+        disponibilidade4.setHoraFim(LocalDateTime.of(2025, 7, 5, 13, 0));    // 05/06/2025 13:00
         disponibilidadeRepository.save(disponibilidade4);
 
     }

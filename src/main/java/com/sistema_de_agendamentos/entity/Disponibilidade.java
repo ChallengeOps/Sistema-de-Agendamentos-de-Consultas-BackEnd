@@ -19,10 +19,6 @@ public class Disponibilidade {
     private Integer id;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private DiaDeSemana diaDeSemana;
-
-    @Column(nullable = false)
     private LocalDateTime horaInicio;
 
     @Column(nullable = false)
@@ -36,29 +32,4 @@ public class Disponibilidade {
     private Agendamento agendamento;
 
 
-    public enum DiaDeSemana {
-        DOMINGO,
-        SEGUNDA,
-        TERCA,
-        QUARTA,
-        QUINTA,
-        SEXTA,
-        SABADO;
-
-        public static DiaDeSemana fromString(String dia) {
-            if (dia == null) {
-                throw new IllegalArgumentException("Dia da semana não pode ser nulo");
-            }
-            try {
-                return DiaDeSemana.valueOf(dia.trim().toUpperCase());
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Dia da semana inválido: " + dia);
-            }
-        }
-
-        //
-        public String getValor() {
-            return this.name().toLowerCase();
-        }
-    }
 }
