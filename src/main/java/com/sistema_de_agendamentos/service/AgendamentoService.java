@@ -1,9 +1,12 @@
 package com.sistema_de_agendamentos.service;
 
 import com.sistema_de_agendamentos.controller.dto.agendamento.AgendamentoCreateDTO;
+import com.sistema_de_agendamentos.controller.dto.agendamento.AgendamentoDTO;
 import com.sistema_de_agendamentos.entity.Agendamento;
 import com.sistema_de_agendamentos.entity.Usuario;
 import com.sistema_de_agendamentos.repository.AgendamentoRepository;
+import com.sistema_de_agendamentos.utils.DateFormaterUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -13,20 +16,13 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AgendamentoService {
 
-    private AgendamentoRepository agendamentoRepository;
-    private UsuarioService usuarioService;
-    private DisponibilidadeService disponibilidadeService;
-    private ServicoService servicoService;
-
-    public AgendamentoService(AgendamentoRepository agendamentoRepository, UsuarioService usuarioService,
-                              DisponibilidadeService disponibilidadeService, ServicoService servicoService) {
-        this.agendamentoRepository = agendamentoRepository;
-        this.usuarioService = usuarioService;
-        this.disponibilidadeService = disponibilidadeService;
-        this.servicoService = servicoService;
-    }
+    private final AgendamentoRepository agendamentoRepository;
+    private final UsuarioService usuarioService;
+    private final DisponibilidadeService disponibilidadeService;
+    private final ServicoService servicoService;
 
     @Transactional
     @PreAuthorize("hasRole('CLIENTE')")
@@ -54,56 +50,33 @@ public class AgendamentoService {
     }
 
     @Transactional
-    public List<Agendamento> listarAgendamentosPorCliente() {
+    public List<AgendamentoDTO> listarAgendamentosPorCliente() {
         var usuario = usuarioService.requireTokenUser();
-        if(usuario.getAcesso() == Usuario.ClienteTipo.PROFISSIONAL) {
-            return agendamentoRepository.findByProfissional(usuario);
+        var agendamentos = usuario.getAgendamentos().stream().map(p -> new AgendamentoDTO(
+                p.getId(),
+                p.getProfissional().getNome(),
+                p.getServico().getNome(), DateFormaterUtils.dateFormate(p.getDisponibilidade())) ).toList();
+
+        if (agendamentos.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Nenhum agendamento encontrado");
         }
-        if (usuario.getAcesso() == Usuario.ClienteTipo.CLIENTE) {
-            return agendamentoRepository.findByCliente(usuario);
-        }
-        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
+        return agendamentos;
     }
 
-    public void cancelarAgendamento(Integer id) {
-        var agendamento = agendamentoRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND,
-                                "Agendamento não encontrado"));
-
-        if (agendamento.getStatus() == Agendamento.Status.CANCELADO) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Agendamento já cancelado");
-        }
-
-        agendamento.setStatus(Agendamento.Status.CANCELADO);
-        agendamentoRepository.save(agendamento);
+    @Transactional
+    public void delete(Integer id) {
+        var agendamento = findEntityPermission(id);
+        agendamentoRepository.delete(agendamento);
     }
 
-    public void concluirAgendamento(Integer id) {
+    public Agendamento findEntityPermission(Integer id) {
         var agendamento = agendamentoRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND,
-                                "Agendamento não encontrado"));
-
-        if (agendamento.getStatus() == Agendamento.Status.CONCLUIDO) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Agendamento já concluído");
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Agendamento não encontrado"));
+        var usuario = usuarioService.requireTokenUser();
+        if (!agendamento.getCliente().equals(usuario) && !agendamento.getProfissional().equals(usuario)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
         }
-
-        agendamento.setStatus(Agendamento.Status.CONCLUIDO);
-        agendamentoRepository.save(agendamento);
-    }
-
-    public void agendamentoSetStatus(Integer id, String status) {
-        var agendamento = agendamentoRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND,
-                                "Agendamento não encontrado"));
-
-        if (!status.equals("CONFIRMADO") && !status.equals("CANCELADO")) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status inválido");
-        }
-        agendamento.setStatus(Agendamento.Status.valueOf(status));
-        agendamentoRepository.save(agendamento);
+        return agendamento;
     }
 
 }

@@ -1,6 +1,7 @@
 package com.sistema_de_agendamentos.controller;
 
 import com.sistema_de_agendamentos.controller.dto.agendamento.AgendamentoCreateDTO;
+import com.sistema_de_agendamentos.controller.dto.agendamento.AgendamentoDTO;
 import com.sistema_de_agendamentos.entity.Agendamento;
 import com.sistema_de_agendamentos.service.AgendamentoService;
 import org.springframework.http.ResponseEntity;
@@ -25,20 +26,15 @@ public class AgendamentoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Agendamento>> listarAgendamentos() {
+    public ResponseEntity<List<AgendamentoDTO>> listarAgendamentos() {
         List<Agendamento> agendamentos = agendamentoService.listarAgendamentosPorCliente();
         return ResponseEntity.ok(agendamentos);
     }
 
-    @PutMapping("/{id}/cancelar")
-    public ResponseEntity<String> cancelarAgendamento(@PathVariable Integer id) {
-        agendamentoService.cancelarAgendamento(id);
-        return ResponseEntity.ok("Agendamento cancelado com sucesso");
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteAgendamento(@PathVariable Integer id) {
+        agendamentoService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{id}/concluir")
-    public ResponseEntity<String> concluirAgendamento(@PathVariable Integer id) {
-        agendamentoService.concluirAgendamento(id);
-        return ResponseEntity.ok("Agendamento concluído com sucesso");
-    }
 }
