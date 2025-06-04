@@ -16,19 +16,19 @@ public class Agendamento {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "cliente_id", nullable = false)
+    @JoinColumn(name = "cliente_id")
     private Usuario cliente;
 
     @ManyToOne
-    @JoinColumn(name = "profissional_id", nullable = false)
+    @JoinColumn(name = "profissional_id")
     private Usuario profissional;
 
     @ManyToOne
-    @JoinColumn(name = "servico_id", nullable = false)
+    @JoinColumn(name = "servico_id")
     private Servico servico;
 
     @OneToOne
-    @JoinColumn(name = "disponibilidade_id", unique = true)
+    @JoinColumn(name = "disponibilidade_id")
     private Disponibilidade disponibilidade;
 
     @Enumerated(EnumType.STRING)

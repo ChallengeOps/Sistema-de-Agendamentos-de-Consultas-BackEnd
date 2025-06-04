@@ -27,7 +27,7 @@ public class AgendamentoController {
 
     @GetMapping
     public ResponseEntity<List<AgendamentoDTO>> listarAgendamentos() {
-        List<Agendamento> agendamentos = agendamentoService.listarAgendamentosPorCliente();
+        List<AgendamentoDTO> agendamentos = agendamentoService.listarAgendamentosPorCliente();
         return ResponseEntity.ok(agendamentos);
     }
 

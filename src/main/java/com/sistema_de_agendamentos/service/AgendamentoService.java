@@ -52,10 +52,15 @@ public class AgendamentoService {
     @Transactional
     public List<AgendamentoDTO> listarAgendamentosPorCliente() {
         var usuario = usuarioService.requireTokenUser();
-        var agendamentos = usuario.getAgendamentos().stream().map(p -> new AgendamentoDTO(
+        var agendamentos = usuario.getAgendamentos().stream()
+            .filter(p -> p.getStatus() == Agendamento.Status.PENDENTE)
+            .map(p -> new AgendamentoDTO(
                 p.getId(),
                 p.getProfissional().getNome(),
-                p.getServico().getNome(), DateFormaterUtils.dateFormate(p.getDisponibilidade())) ).toList();
+                p.getServico().getNome(),
+                DateFormaterUtils.dateFormate(p.getDisponibilidade())
+            ))
+            .toList();
 
         if (agendamentos.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Nenhum agendamento encontrado");
@@ -63,10 +68,12 @@ public class AgendamentoService {
         return agendamentos;
     }
 
-    @Transactional
     public void delete(Integer id) {
-        var agendamento = findEntityPermission(id);
-        agendamentoRepository.delete(agendamento);
+       var agendamento = findEntityPermission(id);
+       agendamento.setDisponibilidade(null);
+       agendamento.setStatus(Agendamento.Status.CANCELADO);
+       agendamentoRepository.save(agendamento);
+       agendamentoRepository.deleteById(id);
     }
 
     public Agendamento findEntityPermission(Integer id) {

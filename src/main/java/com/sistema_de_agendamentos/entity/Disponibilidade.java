@@ -29,7 +29,7 @@ public class Disponibilidade {
     private LocalDateTime horaFim;
 
     @ManyToOne
-    @JoinColumn(name = "profissional_id", nullable = false)
+    @JoinColumn(name = "profissional_id")
     private Usuario profissional;
 
     @OneToOne(mappedBy = "disponibilidade")

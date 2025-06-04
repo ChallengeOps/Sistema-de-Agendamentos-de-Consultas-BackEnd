@@ -37,4 +37,10 @@ public class DisponibilidadeController {
         var dto = disponibilidadeService.busacarPorServico(id);
         return ResponseEntity.ok(dto);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteDisponibilidade(@PathVariable Integer id) {
+        disponibilidadeService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 }
