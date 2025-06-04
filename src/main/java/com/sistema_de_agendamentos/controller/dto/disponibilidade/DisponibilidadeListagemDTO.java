@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 public record DisponibilidadeListagemDTO(
         Integer id,
-        LocalDateTime horaInicio,
-        LocalDateTime horaFim
+        String data,
+        String horaInicio,
+        String horaFim
 ) {}

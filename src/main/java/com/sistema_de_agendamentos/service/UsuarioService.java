@@ -1,14 +1,12 @@
 package com.sistema_de_agendamentos.service;
 
 import com.sistema_de_agendamentos.controller.dto.usuario.ProfissionaisDTO;
-import com.sistema_de_agendamentos.controller.dto.usuario.UsuarioDTO;
+import com.sistema_de_agendamentos.controller.dto.usuario.UsuarioPerfilDTO;
 import com.sistema_de_agendamentos.controller.dto.usuario.UsuarioRegisterDTO;
 import com.sistema_de_agendamentos.entity.Usuario;
 import com.sistema_de_agendamentos.mapper.UsuarioMapper;
 import com.sistema_de_agendamentos.repository.UsuarioRepository;
-import com.sistema_de_agendamentos.utils.StringUtil;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -38,31 +36,13 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
-    public List<UsuarioDTO> findAll() {
-        var usuarios = usuarioRepository.findAll().stream()
-                .map(usuarioMapper::fromEntity).toList();
-        if (usuarios.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NO_CONTENT);
-        }
-        return usuarios;
-    }
-
     @Transactional
-    public UsuarioDTO findById(Integer id) {
-        var usuario = findEntity(id);
-        return usuarioMapper.fromEntity(usuario);
-    }
-
-    @Transactional
-    @PreAuthorize("hasRole('ADMIN')")
     public void deleteById(Integer id) {
         var usuario = findEntity(id);
-
         usuario.getAgendamentos().size();
         usuario.getServicos().size();
         usuario.getDisponibilidades().size();
         usuarioRepository.delete(usuario);
-
     }
 
     public List<ProfissionaisDTO> listarProfissionais() {
@@ -70,7 +50,6 @@ public class UsuarioService {
         if (profissionais.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Nenhum profissional cadastrado");
         }
-
         return profissionais.stream()
                 .map(usuario ->
                     new ProfissionaisDTO(usuario.getId(),
@@ -79,15 +58,14 @@ public class UsuarioService {
                     )).toList();
     }
 
+    public UsuarioPerfilDTO me(){
+        Usuario usuario = requireTokenUser();
+        return new UsuarioPerfilDTO(usuario.getId(), usuario.getNome(), usuario.getEmail(), usuario.getAcesso());
+    }
 
-
-    public  Usuario requireTokenUser(){
+    protected Usuario requireTokenUser(){
         Principal principal = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
-        String principalString = principal.getName();
-
-        String email = StringUtil.extrairEmail(principalString);
-        System.out.println("Email extraído: " + email);
-
+        String email = principal.getName();
         return findByEmail(email);
     }
 
@@ -97,7 +75,7 @@ public class UsuarioService {
                         () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Id invalido"));
     }
 
-    public Usuario findByEmail(String email) {
+    protected Usuario findByEmail(String email) {
         return usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
     }

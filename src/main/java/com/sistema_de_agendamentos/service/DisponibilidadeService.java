@@ -1,26 +1,43 @@
 package com.sistema_de_agendamentos.service;
 
+import com.sistema_de_agendamentos.controller.dto.disponibilidade.DisponibilidadeAgendarDTO;
 import com.sistema_de_agendamentos.controller.dto.disponibilidade.DisponibilidadeDTO;
+import com.sistema_de_agendamentos.controller.dto.disponibilidade.DisponibilidadeListagemDTO;
 import com.sistema_de_agendamentos.entity.Disponibilidade;
 import com.sistema_de_agendamentos.entity.Usuario;
+import com.sistema_de_agendamentos.mapper.DisponibilidadeMapper;
 import com.sistema_de_agendamentos.repository.DisponibilidadeRepository;
+import com.sistema_de_agendamentos.utils.DateFormaterUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
+
+import static com.sistema_de_agendamentos.utils.DateFormaterUtils.dateFormate;
 
 @Service
 public class DisponibilidadeService {
 
     private DisponibilidadeRepository disponibilidadeRepository;
     private UsuarioService usuarioService;
+    private ServicoService servicoService;
+    private DisponibilidadeMapper disponibilidadeMapper;
 
-    public DisponibilidadeService(DisponibilidadeRepository disponibilidadeRepository, UsuarioService usuarioService) {
+    public DisponibilidadeService(DisponibilidadeRepository disponibilidadeRepository,
+                                  UsuarioService usuarioService,
+                                  ServicoService servicoService,
+                                  DisponibilidadeMapper disponibilidadeMapper) {
         this.disponibilidadeRepository = disponibilidadeRepository;
         this.usuarioService = usuarioService;
+        this.servicoService = servicoService;
+        this.disponibilidadeMapper = disponibilidadeMapper;
     }
 
     @Transactional
@@ -28,42 +45,68 @@ public class DisponibilidadeService {
     public void criarDisponibilidade(DisponibilidadeDTO dto){
         var usuario = usuarioService.requireTokenUser();
 
-        var agora = java.time.LocalDateTime.now();
+        var datas = DateFormaterUtils.extrairDatas(dto);
+        var inicio = datas.inicio;
+        var fim = datas.fim;
+        var agora = LocalDateTime.now();
 
-        if (dto.horaInicio().isBefore(agora) || dto.horaFim().isBefore(agora)) {
+        if (inicio.isBefore(agora) || fim.isBefore(agora)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Horários não podem estar no passado");
         }
-        if (!dto.horaFim().isAfter(dto.horaInicio())) {
+        if (!fim.isAfter(inicio)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Hora de fim deve ser após hora de início");
         }
 
         var disponibilidade = new Disponibilidade();
         disponibilidade.setProfissional(usuario);
-        disponibilidade.setHoraInicio(dto.horaInicio());
-        disponibilidade.setHoraFim(dto.horaFim());
-        disponibilidade.setDiaDeSemana(Disponibilidade.DiaDeSemana.fromString(dto.diaDeSemana()));
+        disponibilidade.setHoraInicio(inicio);
+        disponibilidade.setHoraFim(fim);
 
         disponibilidadeRepository.save(disponibilidade);
     }
 
-
     @Transactional
-    public List<Disponibilidade> listarPorProfissional(Integer id) {
-        var usuario = usuarioService.findEntity(id);
+    public List<DisponibilidadeAgendarDTO> buscarPorServico(Integer id) {
+        var servico = servicoService.findEntity(id);
         var agora = java.time.LocalDateTime.now();
-        return disponibilidadeRepository.findByProfissional(usuario).stream()
-                .filter(disponibilidade -> disponibilidade.getHoraFim().isAfter(agora))
+
+        return disponibilidadeRepository.findByProfissional(servico.getProfissional()).stream()
+                .filter(d -> d.getHoraFim().isAfter(agora))
+                .filter(d -> d.getAgendamento() == null)
+                .map(d -> disponibilidadeMapper.toAgendarDTO(d))
                 .toList();
     }
 
+    @Transactional
+    @PreAuthorize("hasRole('PROFISSIONAL')")
+    public List<DisponibilidadeListagemDTO> listarPorProfissional() {
+        var usuario = usuarioService.requireTokenUser();
+        var agora = java.time.LocalDateTime.now();
+        return disponibilidadeRepository.findByProfissional(usuario).stream()
+                .filter(d -> d.getHoraFim().isAfter(agora))
+                .filter(d -> d.getAgendamento() == null)
+                .map(d -> disponibilidadeMapper.toListagemDTO(d))
+                .toList();
+    }
 
+    @Transactional
+    @PreAuthorize("hasRole('PROFISSIONAL')")
+    public void delete(Integer id) {
+        var disponibilidade = findEntityPermission(id);
+        disponibilidadeRepository.delete(disponibilidade);
+    }
 
-    private Disponibilidade findEntity(Integer id) {
+    protected Disponibilidade findEntity(Integer id) {
         return disponibilidadeRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Disponibilidade não encontrada"));
     }
 
-    public Disponibilidade findDisponibilidade(Integer integer) {
-        return findEntity(integer);
+    protected Disponibilidade findEntityPermission(Integer id) {
+        var disponibilidade = findEntity(id);
+        var usuario = usuarioService.requireTokenUser();
+        if (!disponibilidade.getProfissional().getId().equals(usuario.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Você não tem permissão para acessar esta disponibilidade");
+        }
+        return disponibilidade;
     }
 }

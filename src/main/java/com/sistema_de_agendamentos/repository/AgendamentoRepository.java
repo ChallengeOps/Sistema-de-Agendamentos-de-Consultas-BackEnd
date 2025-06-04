@@ -7,8 +7,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface AgendamentoRepository extends JpaRepository<Agendamento, Integer> {
-
-    //metodo de pegar lista de agendamento por cliente
-    List<Agendamento> findByCliente(Usuario cliente);
-    List<Agendamento> findByProfissional(Usuario profissional);
 }

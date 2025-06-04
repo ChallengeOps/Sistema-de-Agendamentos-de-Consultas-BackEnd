@@ -8,7 +8,9 @@ import com.sistema_de_agendamentos.controller.dto.usuario.ProfissionaisDTO;
 import com.sistema_de_agendamentos.entity.Servico;
 
 import com.sistema_de_agendamentos.entity.Usuario;
+import com.sistema_de_agendamentos.mapper.ServicoMapper;
 import com.sistema_de_agendamentos.repository.ServicoRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -18,28 +20,18 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ServicoService {
 
-    private ServicoRepository servicoRepository;
-    private UsuarioService usuarioService;
-
-    public ServicoService(ServicoRepository servicoRepository, UsuarioService usuarioService) {
-        this.servicoRepository = servicoRepository;
-        this.usuarioService = usuarioService;
-    }
+    private final ServicoRepository servicoRepository;
+    private final UsuarioService usuarioService;
+    private final ServicoMapper servicoMapper;
 
     @Transactional
     @PreAuthorize("hasRole('PROFISSIONAL')")
     public ServicoListagemDTO cadastrarServico(ServicoDTO dto){
-
         Usuario profissional = usuarioService.requireTokenUser();
-
-        var servico = new Servico();
-        servico.setProfissional(profissional);
-        servico.setNome(dto.nome());
-        servico.setDescricao(dto.descricao());
-        servico.setDuracaoEmMinutos(dto.duracaoEmMinutos());
-
+        var servico = servicoMapper.fromDTO(dto, profissional);
         return new ServicoListagemDTO(
                 servicoRepository.save(servico).getId(),
                 servico.getNome(),
@@ -48,6 +40,35 @@ public class ServicoService {
                 profissional.getNome()
         );
     }
+
+    @Transactional
+    @PreAuthorize("hasRole('PROFISSIONAL')")
+    public List<ServicoListagemDTO> listarServicosPorProfissional() {
+        Usuario usuario = usuarioService.requireTokenUser();
+        List<Servico> servicos = usuario.getServicos();
+        if (servicos.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Nenhum serviço encontrado para o profissional");
+        }
+        return servicos.stream()
+                .map(s -> new ServicoListagemDTO(s.getId(), s.getNome(), s.getDescricao(), s.getDuracaoEmMinutos(), s.getProfissional().getNome()))
+                .toList();
+    }
+
+    @Transactional
+    @PreAuthorize("hasRole('PROFISSIONAL')")
+    public void deletarServico(Integer id) {
+        Servico servico = findEntityPermission(id);
+        servicoRepository.delete(servico);
+    }
+
+    @Transactional
+    @PreAuthorize("hasRole('PROFISSIONAL')")
+    public void update(Integer id, ServicoDTO dto) {
+        Servico servico = findEntityPermission(id);
+        servicoMapper.updateFromDTO(dto, servico);
+        servicoRepository.save(servico);
+    }
+
 
     @Transactional
     public List<ServicoListagemDTO> listarServicos() {
@@ -65,56 +86,17 @@ public class ServicoService {
 
 
 
-    public ServicoDetailsDTO detalharServico(Integer id) {
-        Servico servico = servicoRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Serviço não encontrado"));
-
-        return new ServicoDetailsDTO(
-                servico.getId(),
-                servico.getNome(),
-                servico.getDescricao(),
-                servico.getDuracaoEmMinutos(),
-                servico.getProfissional().getNome(),
-                servico.getProfissional().getDisponibilidades().stream()
-                        .filter(disponibilidade -> disponibilidade.getAgendamento() == null)
-                        .map(disponibilidade -> new DisponibilidadeListagemDTO(
-                                disponibilidade.getId(),
-                                disponibilidade.getHoraInicio(),
-                                disponibilidade.getHoraFim()
-                        ))
-                        .toList()
-        );
-    }
-
-
-    @Transactional
-    public List<ServicoDTO> listarServicosPorProfissional(Integer id) {
-        Usuario usuario = usuarioService.findEntity(id);
-
-        List<Servico> servicos = servicoRepository.findByProfissionalId(id);
-        if (servicos.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Nenhum serviço encontrado para o profissional");
-        }
-        return servicos.stream()
-                .map(servico -> new ServicoDTO(servico.getNome(), servico.getDescricao(), servico.getDuracaoEmMinutos()))
-                .toList();
-    }
-
-
-    public ProfissionaisDTO getProfissionalByServico(Integer id) {
-        Servico servico = findEntity(id);
-        Usuario profissional = servico.getProfissional();
-        return new ProfissionaisDTO(profissional.getId(), profissional.getNome(), profissional.getEmail());
-    }
-
-
-
-    private Servico findEntity(Integer id) {
+    protected Servico findEntity(Integer id) {
         return servicoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Serviço não encontrado"));
     }
 
-    public Servico findServico(Integer integer) {
-        return findEntity( integer);
+    protected Servico findEntityPermission(Integer id) {
+        Usuario usuario = usuarioService.requireTokenUser();
+        var servico = findEntity(id);
+        if (!servico.getProfissional().getId().equals(usuario.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Você não tem permissão para acessar este serviço");
+        }
+        return servico;
     }
 }

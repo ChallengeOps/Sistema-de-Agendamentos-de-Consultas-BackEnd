@@ -55,7 +55,7 @@ public class TokenService {
                 .toInstant(ZoneOffset.of("-03:00"));
     }
 
-    public String getRoleFromToken(String token) {
+    protected String getRoleFromToken(String token) {
         return JWT.require(Algorithm.HMAC256(secret))
                 .build()
                 .verify(token)

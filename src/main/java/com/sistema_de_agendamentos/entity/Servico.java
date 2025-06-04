@@ -27,9 +27,10 @@ public class Servico {
     private Integer duracaoEmMinutos;
 
     @ManyToOne
-    @JoinColumn(name = "profissional_id", nullable = false)
+    @JoinColumn(name = "profissional_id")
     private Usuario profissional;
 
-    @OneToMany(mappedBy = "servico", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "servico", fetch = FetchType.LAZY)
     private List<Agendamento> agendamentos;
 }
+

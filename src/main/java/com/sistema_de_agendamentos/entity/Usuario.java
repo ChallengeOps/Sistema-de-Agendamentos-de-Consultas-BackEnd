@@ -26,15 +26,14 @@ public class Usuario {
     @Column(nullable = false)
     private String password;
 
-    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "cliente", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Agendamento> agendamentos;
 
-    @OneToMany(mappedBy = "profissional", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "profissional", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Servico> servicos;
 
-    @OneToMany(mappedBy = "profissional", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "profissional", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     private List<Disponibilidade> disponibilidades;
-
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -42,13 +41,10 @@ public class Usuario {
 
     public enum ClienteTipo{
         CLIENTE,
-        PROFISSIONAL,
-        ADMIN;
+        PROFISSIONAL;
 
-        //faca aqui um getnome do enum ClienteTipo
         public String getNome() {
             return this.name();
         }
-
     }
 }
