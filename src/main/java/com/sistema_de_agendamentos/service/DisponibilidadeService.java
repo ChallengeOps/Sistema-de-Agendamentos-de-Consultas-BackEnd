@@ -51,6 +51,7 @@ public class DisponibilidadeService {
 
         var disponibilidade = new Disponibilidade();
         disponibilidade.setProfissional(usuario);
+
         disponibilidade.setHoraInicio(inicio);
         disponibilidade.setHoraFim(fim);
 
