@@ -32,13 +32,8 @@ public class ServicoService {
     public ServicoListagemDTO cadastrarServico(ServicoDTO dto){
         Usuario profissional = usuarioService.getAuthenticationUser();
         var servico = servicoMapper.fromDTO(dto, profissional);
-        return new ServicoListagemDTO(
-                servicoRepository.save(servico).getId(),
-                servico.getNome(),
-                servico.getDescricao(),
-                servico.getDuracaoEmMinutos(),
-                profissional.getNome()
-        );
+        servicoRepository.save(servico);
+        return servicoMapper.toListagemDTO(servico);
     }
 
     @Transactional
@@ -49,25 +44,23 @@ public class ServicoService {
         if (servicos.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Nenhum serviço encontrado para o profissional");
         }
-        return servicos.stream()
-                .map(s -> new ServicoListagemDTO(s.getId(), s.getNome(), s.getDescricao(), s.getDuracaoEmMinutos(), s.getProfissional().getNome()))
-                .toList();
+        return servicos.stream().map(s -> servicoMapper.toListagemDTO(s)).toList();
     }
 
     @Transactional
     @PreAuthorize("hasRole('PROFISSIONAL')")
     public void deletarServico(Integer id) {
-        Servico servico = findEntityPermission(id);
+        Servico servico = findEntityWithPermission(id);
         servicoRepository.delete(servico);
     }
 
     @Transactional
     @PreAuthorize("hasRole('PROFISSIONAL')")
-    public ServicoListagemDTO update(Integer id, ServicoDTO dto) {
-        Servico servico = findEntityPermission(id);
-        return new ServicoListagemDTO(servico.getId(), servico.getNome(),
-                servico.getDescricao(), servico.getDuracaoEmMinutos(),
-                servico.getProfissional().getNome());
+    public ServicoListagemDTO update(Integer id, ServicoListagemDTO dto) {
+        Servico servico = findEntityWithPermission(id);
+        servicoMapper.updateFromListagemDTO(servico, dto);
+        servicoRepository.save(servico);
+        return servicoMapper.toListagemDTO(servico);
     }
 
 
@@ -78,21 +71,15 @@ public class ServicoService {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Nenhum serviço cadastrado");
         }
         return servicos.stream()
-                .map(servico -> new ServicoListagemDTO(servico.getId(),
-                        servico.getNome(),
-                        servico.getDescricao(),
-                        servico.getDuracaoEmMinutos(), servico.getProfissional().getNome()))
-                .toList();
+                .map(servico -> servicoMapper.toListagemDTO(servico)).toList();
     }
-
-
 
     protected Servico findEntity(Integer id) {
         return servicoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Serviço não encontrado"));
     }
 
-    protected Servico findEntityPermission(Integer id) {
+    protected Servico findEntityWithPermission(Integer id) {
         Usuario usuario = usuarioService.getAuthenticationUser();
         var servico = findEntity(id);
         if (!servico.getProfissional().getId().equals(usuario.getId())) {

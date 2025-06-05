@@ -1,6 +1,7 @@
 package com.sistema_de_agendamentos.mapper;
 
 import com.sistema_de_agendamentos.controller.dto.servico.ServicoDTO;
+import com.sistema_de_agendamentos.controller.dto.servico.ServicoListagemDTO;
 import com.sistema_de_agendamentos.entity.Servico;
 import com.sistema_de_agendamentos.entity.Usuario;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,6 @@ public class ServicoMapper {
     public void updateFromDTO(ServicoDTO dto, Servico servico) {
         if (dto == null || servico == null) return;
 
-        // Só atualiza se os campos do DTO não forem nulos
         if (dto.nome() != null) {
             servico.setNome(dto.nome());
         }
@@ -38,5 +38,24 @@ public class ServicoMapper {
         servico.setAgendamentos(null);
 
         return servico;
+    }
+
+    // Dentro de ServicoService.java
+
+    public ServicoListagemDTO toListagemDTO(Servico servico) {
+        return new ServicoListagemDTO(
+                servico.getId(),
+                servico.getNome(),
+                servico.getDescricao(),
+                servico.getDuracaoEmMinutos(),
+                servico.getProfissional().getNome()
+        );
+    }
+
+    public void updateFromListagemDTO(Servico servico, ServicoListagemDTO dto) {
+        servico.setNome(dto.nome());
+        servico.setDescricao(dto.descricao());
+        servico.setDuracaoEmMinutos(dto.duracaoEmMinutos());
+        // Não altere o profissional aqui, pois vem do contexto de autenticação
     }
 }
