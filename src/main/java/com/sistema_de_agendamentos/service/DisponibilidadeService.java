@@ -43,7 +43,7 @@ public class DisponibilidadeService {
     @Transactional
     @PreAuthorize("hasRole('PROFISSIONAL')")
     public void criarDisponibilidade(DisponibilidadeDTO dto){
-        var usuario = usuarioService.requireTokenUser();
+        var usuario = usuarioService.getAuthenticationUser();
 
         var datas = DateFormaterUtils.extrairDatas(dto);
         var inicio = datas.inicio;
@@ -80,7 +80,7 @@ public class DisponibilidadeService {
     @Transactional
     @PreAuthorize("hasRole('PROFISSIONAL')")
     public List<DisponibilidadeListagemDTO> listarPorProfissional() {
-        var usuario = usuarioService.requireTokenUser();
+        var usuario = usuarioService.getAuthenticationUser();
         var agora = java.time.LocalDateTime.now();
         return disponibilidadeRepository.findByProfissional(usuario).stream()
                 .filter(d -> d.getHoraFim().isAfter(agora))
@@ -103,7 +103,7 @@ public class DisponibilidadeService {
 
     protected Disponibilidade findEntityPermission(Integer id) {
         var disponibilidade = findEntity(id);
-        var usuario = usuarioService.requireTokenUser();
+        var usuario = usuarioService.getAuthenticationUser();
         if (!disponibilidade.getProfissional().getId().equals(usuario.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Você não tem permissão para acessar esta disponibilidade");
         }

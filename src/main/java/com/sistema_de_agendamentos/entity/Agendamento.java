@@ -51,5 +51,4 @@ public class Agendamento {
             }
         }
     }
-    // Getters and Setters can be generated or manually added here
 }

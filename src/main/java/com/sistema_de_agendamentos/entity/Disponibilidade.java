@@ -30,6 +30,4 @@ public class Disponibilidade {
 
     @OneToOne(mappedBy = "disponibilidade")
     private Agendamento agendamento;
-
-
 }

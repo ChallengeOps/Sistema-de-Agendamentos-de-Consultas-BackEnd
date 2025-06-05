@@ -14,6 +14,7 @@ import com.sistema_de_agendamentos.service.UsuarioService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
@@ -34,6 +35,7 @@ public class StarterApplication {
     private ServicoRepository servicoRepository;
 
     @PostConstruct
+    //@Profile("!test")
     public void start(){
         usuarioService.create(new UsuarioRegisterDTO( "Cliente Um", "cliente1@email.com",passwordEncoder.encode("123456"), Usuario.ClienteTipo.CLIENTE));
         usuarioService.create(new UsuarioRegisterDTO("Cliente Dois", "cliente2@email.com", passwordEncoder.encode("123456"), Usuario.ClienteTipo.CLIENTE));
@@ -98,6 +100,5 @@ public class StarterApplication {
         disponibilidade4.setHoraInicio(LocalDateTime.of(2025, 7, 5, 10, 0)); // 05/06/2025 10:00
         disponibilidade4.setHoraFim(LocalDateTime.of(2025, 7, 5, 13, 0));    // 05/06/2025 13:00
         disponibilidadeRepository.save(disponibilidade4);
-
     }
 }

@@ -22,10 +22,4 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.me());
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUsuario(@PathVariable Integer id) {
-        usuarioService.deleteById(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
-
 }

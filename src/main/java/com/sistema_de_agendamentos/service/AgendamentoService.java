@@ -19,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AgendamentoService {
 
-    private final AgendamentoRepository agendamentoRepository;
+    private final AgendamentoRepository agendamentoRepository ;
     private final UsuarioService usuarioService;
     private final DisponibilidadeService disponibilidadeService;
     private final ServicoService servicoService;
@@ -28,7 +28,7 @@ public class AgendamentoService {
     @PreAuthorize("hasRole('CLIENTE')")
     public void criarAgendamento(AgendamentoCreateDTO createDTO){
         System.out.println("Criando agendamento com DTO: " + createDTO);
-        var usuario = usuarioService.requireTokenUser();
+        var usuario = usuarioService.getAuthenticationUser();
 
         System.out.println(usuario.getNome());
         var servico = servicoService.findEntity(createDTO.servicoId());
@@ -51,7 +51,7 @@ public class AgendamentoService {
 
     @Transactional
     public List<AgendamentoDTO> listarAgendamentosParaUsuarioAtual() {
-        var usuario = usuarioService.requireTokenUser();
+        var usuario = usuarioService.getAuthenticationUser();
         List<Agendamento> agendamentos;
 
         if (usuario.getAcesso() == Usuario.ClienteTipo.CLIENTE) {
@@ -88,7 +88,7 @@ public class AgendamentoService {
     public Agendamento findEntityPermission(Integer id) {
         var agendamento = agendamentoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Agendamento não encontrado"));
-        var usuario = usuarioService.requireTokenUser();
+        var usuario = usuarioService.getAuthenticationUser();
         if (!agendamento.getCliente().equals(usuario) && !agendamento.getProfissional().equals(usuario)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado");
         }

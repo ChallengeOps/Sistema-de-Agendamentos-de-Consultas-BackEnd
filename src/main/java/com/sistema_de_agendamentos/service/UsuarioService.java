@@ -31,41 +31,17 @@ public class UsuarioService {
         if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email já cadastrado");
         }
-        usuario.setAcesso(usuarioDTO.acesso());
-        usuario.setPassword(usuarioDTO.senha());
         return usuarioRepository.save(usuario);
     }
 
-    @Transactional
-    public void deleteById(Integer id) {
-        var usuario = findEntity(id);
-        usuario.getAgendamentos().size();
-        usuario.getServicos().size();
-        usuario.getDisponibilidades().size();
-        usuarioRepository.delete(usuario);
-    }
-
-    public List<ProfissionaisDTO> listarProfissionais() {
-        var profissionais = usuarioRepository.findByAcesso(Usuario.ClienteTipo.PROFISSIONAL);
-        if (profissionais.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Nenhum profissional cadastrado");
-        }
-        return profissionais.stream()
-                .map(usuario ->
-                    new ProfissionaisDTO(usuario.getId(),
-                            usuario.getNome(),
-                            usuario.getEmail()
-                    )).toList();
-    }
-
     public UsuarioPerfilDTO me(){
-        Usuario usuario = requireTokenUser();
+        Usuario usuario = getAuthenticationUser();
         return new UsuarioPerfilDTO(usuario.getId(), usuario.getNome(), usuario.getEmail(), usuario.getAcesso());
     }
 
-    protected Usuario requireTokenUser(){
-        Principal principal = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
-        String email = principal.getName();
+    protected Usuario getAuthenticationUser(){
+        Principal authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
         return findByEmail(email);
     }
 
