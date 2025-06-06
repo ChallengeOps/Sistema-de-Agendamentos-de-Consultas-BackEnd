@@ -30,10 +30,4 @@ public class ProfissionalController {
         return ResponseEntity.ok(servicos);
     }
 
-    @GetMapping
-    public ResponseEntity<List<ProfissionaisDTO>> listarProfissionais() {
-        var profissionais = usuarioService.listarProfissionais();
-        return ResponseEntity.ok(profissionais);
-    }
-
 }

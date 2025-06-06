@@ -8,6 +8,7 @@ import com.sistema_de_agendamentos.entity.Usuario;
 import com.sistema_de_agendamentos.mapper.DisponibilidadeMapper;
 import com.sistema_de_agendamentos.repository.DisponibilidadeRepository;
 import com.sistema_de_agendamentos.utils.DateFormaterUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -23,27 +24,18 @@ import java.util.Optional;
 import static com.sistema_de_agendamentos.utils.DateFormaterUtils.dateFormate;
 
 @Service
+@RequiredArgsConstructor
 public class DisponibilidadeService {
 
-    private DisponibilidadeRepository disponibilidadeRepository;
-    private UsuarioService usuarioService;
-    private ServicoService servicoService;
-    private DisponibilidadeMapper disponibilidadeMapper;
-
-    public DisponibilidadeService(DisponibilidadeRepository disponibilidadeRepository,
-                                  UsuarioService usuarioService,
-                                  ServicoService servicoService,
-                                  DisponibilidadeMapper disponibilidadeMapper) {
-        this.disponibilidadeRepository = disponibilidadeRepository;
-        this.usuarioService = usuarioService;
-        this.servicoService = servicoService;
-        this.disponibilidadeMapper = disponibilidadeMapper;
-    }
+    private final DisponibilidadeRepository disponibilidadeRepository;
+    private final UsuarioService usuarioService;
+    private final ServicoService servicoService;
+    private final DisponibilidadeMapper disponibilidadeMapper;
 
     @Transactional
     @PreAuthorize("hasRole('PROFISSIONAL')")
     public void criarDisponibilidade(DisponibilidadeDTO dto){
-        var usuario = usuarioService.requireTokenUser();
+        var usuario = usuarioService.getAuthenticationUser();
 
         var datas = DateFormaterUtils.extrairDatas(dto);
         var inicio = datas.inicio;
@@ -59,6 +51,7 @@ public class DisponibilidadeService {
 
         var disponibilidade = new Disponibilidade();
         disponibilidade.setProfissional(usuario);
+
         disponibilidade.setHoraInicio(inicio);
         disponibilidade.setHoraFim(fim);
 
@@ -80,7 +73,7 @@ public class DisponibilidadeService {
     @Transactional
     @PreAuthorize("hasRole('PROFISSIONAL')")
     public List<DisponibilidadeListagemDTO> listarPorProfissional() {
-        var usuario = usuarioService.requireTokenUser();
+        var usuario = usuarioService.getAuthenticationUser();
         var agora = java.time.LocalDateTime.now();
         return disponibilidadeRepository.findByProfissional(usuario).stream()
                 .filter(d -> d.getHoraFim().isAfter(agora))
@@ -103,7 +96,7 @@ public class DisponibilidadeService {
 
     protected Disponibilidade findEntityPermission(Integer id) {
         var disponibilidade = findEntity(id);
-        var usuario = usuarioService.requireTokenUser();
+        var usuario = usuarioService.getAuthenticationUser();
         if (!disponibilidade.getProfissional().getId().equals(usuario.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Você não tem permissão para acessar esta disponibilidade");
         }

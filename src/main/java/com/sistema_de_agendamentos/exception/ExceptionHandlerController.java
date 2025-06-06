@@ -60,7 +60,6 @@ public class ExceptionHandlerController {
         return new ResponseEntity<>(responseError, HttpStatus.BAD_REQUEST);
     }
 
-    // Trata erro de acesso negado por @PreAuthorize
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ResponseError> handleAccessDeniedException(AccessDeniedException ex) {
         ResponseError responseError = new ResponseError(HttpStatus.FORBIDDEN, "Acesso negado.");
